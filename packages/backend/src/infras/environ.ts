@@ -8,11 +8,11 @@ interface environ {
     APP_VER: string | number;
 
     // database default connection
-    DB_HOST: string | number | null;
-    DB_USER: string | null;
-    DB_PASS: string | null;
-    DB_NAME: string | null;
-    DB_PORT: string | number | null;
+    DB_HOST: string | undefined;
+    DB_USER: string | undefined;
+    DB_PASS: string | undefined;
+    DB_NAME: string | undefined;
+    DB_PORT: any;
 }
 
 const ENV: environ = {
@@ -20,10 +20,10 @@ const ENV: environ = {
     APP_PORT: process.env.APP_PORT ?? 5000,
     APP_VER: process.env.APP_VER ?? 0.1,
 
-    DB_HOST: process.env.DB_HOST ?? null,
-    DB_USER: process.env.DB_USER ?? null,
-    DB_PASS: process.env.DB_PASS ?? null,
-    DB_NAME: process.env.DB_NAME ?? null,
-    DB_PORT: process.env.DB_PORT ?? null,
+    DB_HOST: process.env.DB_HOST ?? "",
+    DB_USER: process.env.DB_USER ?? "",
+    DB_PASS: process.env.DB_PASS ?? "",
+    DB_NAME: process.env.DB_NAME ?? "",
+    DB_PORT: process.env.DB_PORT ?? 5050, // default pgsql port
 }
 export default ENV;
