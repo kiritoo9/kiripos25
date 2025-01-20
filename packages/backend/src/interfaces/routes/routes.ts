@@ -4,7 +4,7 @@ import response from "../../utils/response";
 import ENV from "../../infras/environ";
 
 // import all routes available
-import userRoute from "./masters/userRoutes";
+import userRoute from "./masters/user.route";
 
 // define necessary global function or variables
 const router = Router();
