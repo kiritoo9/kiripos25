@@ -53,6 +53,6 @@ router.get("/", (_: Request, res: Response) => {
 });
 
 // define routes for master
-router.use("/user", userRoute);
+router.use("/users", userRoute);
 
 export default router;
