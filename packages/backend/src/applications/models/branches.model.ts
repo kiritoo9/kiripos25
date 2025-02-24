@@ -4,7 +4,8 @@ import {
     DataType,
     Column,
     Default,
-    PrimaryKey
+    PrimaryKey,
+    Unique
 } from "sequelize-typescript";
 import { v4 as uuidv4 } from "uuid";
 
@@ -18,6 +19,7 @@ class Branches extends Model {
     @Column(DataType.UUID)
     declare id: string;
 
+    @Unique(true)
     @Column(DataType.STRING)
     name!: string;
 

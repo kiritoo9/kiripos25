@@ -1,41 +1,42 @@
 import {
-    Model,
-    Column,
-    Table,
     DataType,
-    Default,
+    Table,
     PrimaryKey,
-    Unique
+    Column,
+    Model,
+    Default
 } from "sequelize-typescript";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 @Table({
-    tableName: "users",
+    tableName: "tables",
     timestamps: false
 })
-class Users extends Model {
+class Tables extends Model {
     @PrimaryKey
     @Default(uuidv4)
     @Column(DataType.UUID)
     declare id?: string;
 
-    @Unique(true)
     @Column(DataType.STRING)
-    username!: string;
+    table_no!: string;
+
+    @Column(DataType.NUMBER)
+    max_person!: number;
 
     @Column(DataType.STRING)
-    password!: string;
+    remark!: string;
 
     @Default(false)
     @Column(DataType.BOOLEAN)
-    deleted?: boolean;
+    deleted!: boolean;
 
     @Default(new Date())
     @Column(DataType.DATE)
-    created_at?: Date;
+    created_at!: Date;
 
     @Column(DataType.DATE)
-    updated_at?: Date;
+    updated_at!: Date;
 }
 
-export default Users;
+export default Tables;

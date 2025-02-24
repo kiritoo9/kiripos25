@@ -1,54 +1,54 @@
 import {
-    Model,
-    Table,
+    Column,
     DataType,
     Default,
-    Column,
+    Model,
     PrimaryKey,
-    Unique
+    Table
 } from "sequelize-typescript";
 import { v4 as uuidv4 } from "uuid";
 
 @Table({
-    tableName: "menus",
+    tableName: "customers",
     timestamps: false
 })
-class Menus extends Model {
+class Customers extends Model {
     @PrimaryKey
     @Default(uuidv4)
     @Column(DataType.UUID)
-    declare id: string;
+    declare id?: string;
 
-    @Default(null)
-    @Column(DataType.UUID)
-    parent_id?: string;
-
-    @Column(DataType.STRING)
-    label!: string;
-
-    @Unique(true)
     @Column(DataType.STRING)
     name!: string;
 
-    @Unique(true)
     @Column(DataType.STRING)
-    url!: string;
+    email!: string;
 
-    @Default(null)
     @Column(DataType.STRING)
-    icon?: string;
+    phone!: string;
+
+    @Column(DataType.STRING)
+    address!: string;
+
+    @Column(DataType.STRING)
+    gender!: string;
+
+    @Column(DataType.STRING)
+    range_of_age!: string;
+
+    @Column(DataType.STRING)
+    remark!: string;
 
     @Default(false)
     @Column(DataType.BOOLEAN)
-    deleted?: boolean;
+    deleted!: boolean;
 
     @Default(new Date())
     @Column(DataType.DATE)
-    created_at?: Date;
+    created_at!: Date;
 
-    @Default(new Date())
     @Column(DataType.DATE)
-    updated_at?: Date;
+    updated_at!: Date;
 }
 
-export default Menus;
+export default Customers;

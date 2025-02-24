@@ -1,54 +1,56 @@
 import {
     Model,
+    Column,
     Table,
     DataType,
     Default,
-    Column,
     PrimaryKey,
-    Unique
+    ForeignKey,
+    BelongsTo
 } from "sequelize-typescript";
 import { v4 as uuidv4 } from "uuid";
+import Users from "./users.model";
 
 @Table({
-    tableName: "menus",
+    tableName: "user_profiles",
     timestamps: false
 })
-class Menus extends Model {
+class UserProfiles extends Model {
     @PrimaryKey
     @Default(uuidv4)
     @Column(DataType.UUID)
-    declare id: string;
+    declare id?: string;
 
-    @Default(null)
+    @ForeignKey(() => Users)
     @Column(DataType.UUID)
-    parent_id?: string;
+    user_id!: string;
 
     @Column(DataType.STRING)
-    label!: string;
+    fullname!: string;
 
-    @Unique(true)
     @Column(DataType.STRING)
-    name!: string;
+    email!: string;
 
-    @Unique(true)
     @Column(DataType.STRING)
-    url!: string;
+    phone!: string;
 
-    @Default(null)
     @Column(DataType.STRING)
-    icon?: string;
+    address!: string;
 
     @Default(false)
     @Column(DataType.BOOLEAN)
-    deleted?: boolean;
+    deleted!: boolean;
 
     @Default(new Date())
     @Column(DataType.DATE)
     created_at?: Date;
 
-    @Default(new Date())
     @Column(DataType.DATE)
     updated_at?: Date;
+
+    // define an association
+    @BelongsTo(() => Users, { onDelete: "CASCADE" })
+    user?: Users;
 }
 
-export default Menus;
+export default UserProfiles;
