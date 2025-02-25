@@ -28,13 +28,25 @@ const swaggerOptions = {
         tags: [
             { name: "Welcome", description: "Welcome page for server test" },
             { name: "Auth", description: "Authentication" },
-            { name: "Masters", description: "Data masters" }
+            { name: "Master - Users", description: "Data master of users" }
         ],
         servers: [
             {
                 url: "http://localhost:5000"
             }
-        ]
+        ],
+        components: {
+            securitySchemes: {
+                BearerAuth: {
+                    type: "http",
+                    scheme: "bearer",
+                    bearerFormat: "JWT",
+                },
+            },
+        },
+        security: [
+            { BearerAuth: [] }, // to catch bearer-header
+        ],
     },
     apis: ["./src/interfaces/routes/**/*.ts"]
 }

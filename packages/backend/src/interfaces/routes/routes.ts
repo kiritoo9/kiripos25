@@ -1,46 +1,18 @@
 import { Router, type Request, type Response } from "express";
+
 import type { IoResponseSchema } from "../schemas/io-response.schema";
 import response from "../../utils/response";
 import ENV from "../../infras/environ";
+import verifyBearerToken from "../middlewares/verify";
 
 // import all routes available
 import authRoute from "./auth/auth.route";
-import userRoute from "./masters/user.route";
+import userRoute from "./masters/users/user.route";
 
 // define necessary global function or variables
 const router = Router();
 
 // welcome route
-/**
- * @swagger
- * /:
- *  get:
- *      summary: Welcome page
- *      tags:
- *          - Welcome
- *      description: Welcome page to check if server is run well
- *      responses:
- *          200:
- *              description: Request success
- *              content:
- *                  application/json:
- *                      schema:
- *                          type: object
- *                          properties:
- *                              status: 
- *                                  type: integer
- *                              message:
- *                                  type: string
- *                              data:
- *                                  type: object
- *                                  properties:
- *                                      name:
- *                                          type: string
- *                                      version:
- *                                          type: string
- *          400:
- *              description: Bad request
- */
 router.get("/", (_: Request, res: Response) => {
     const data: IoResponseSchema = {
         status: 200,
@@ -57,6 +29,6 @@ router.get("/", (_: Request, res: Response) => {
 router.use("/auth", authRoute);
 
 // define routes for master
-router.use("/users", userRoute);
+router.use("/users", verifyBearerToken, userRoute);
 
 export default router;

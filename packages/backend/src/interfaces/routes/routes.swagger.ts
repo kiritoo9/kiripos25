@@ -1,17 +1,11 @@
-import { Router, type Request, type Response } from "express";
-import response from "../../../utils/response";
-
-// define necessary global function or variables
-const router = Router();
-
 /**
  * @swagger
- * /users:
+ * /:
  *  get:
- *      summary: List user
+ *      summary: Welcome page
  *      tags:
- *          - Masters
- *      description: List of users available in database
+ *          - Welcome
+ *      description: Welcome page to check if server is run well
  *      responses:
  *          200:
  *              description: Request success
@@ -34,11 +28,3 @@ const router = Router();
  *          400:
  *              description: Bad request
  */
-router.get("/", (req: Request, res: Response) => {
-    return response(res, {
-        status: 200,
-        message: "this is user route",
-    });
-});
-
-export default router;
