@@ -1,5 +1,5 @@
 import type { Response } from "express";
-import type { IoResponse } from "../interfaces/schemas/io-response";
+import type { IoResponse } from "../interfaces/schemas/io-response.schema";
 
 const response = (res: Response, data: IoResponse) => {
     let body: { [key: string]: any } = {

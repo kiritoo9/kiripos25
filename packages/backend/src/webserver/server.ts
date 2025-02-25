@@ -1,14 +1,21 @@
 import express from 'express';
-import router from '../interfaces/routes/routes';
 import { serve, setup } from "swagger-ui-express";
 import swaggerJSDoc from 'swagger-jsdoc';
+import cors from 'cors';
+
 import ENV from '../infras/environ';
+import { ensureConnection } from '../infras/database/sequelize';
+import router from '../interfaces/routes/routes';
 
 const app = express();
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// define swagger docs
+// initiate swagger docs
 const swaggerOptions = {
     swaggerDefinition: {
+        openapi: "3.0.0",
         info: {
             title: "API Documentation",
             version: "1.0.0",
@@ -20,6 +27,7 @@ const swaggerOptions = {
         },
         tags: [
             { name: "Welcome", description: "Welcome page for server test" },
+            { name: "Auth", description: "Authentication" },
             { name: "Masters", description: "Data masters" }
         ],
         servers: [
@@ -37,6 +45,8 @@ app.use("/docs", serve, setup(swaggerDocs));
 app.use("/", router);
 
 // run the server
-app.listen(ENV.APP_PORT, () => {
-    console.info(`Server is running in :${ENV.APP_PORT}`);
+ensureConnection().then(() => {
+    app.listen(ENV.APP_PORT, () => {
+        console.info(`Server is running in :${ENV.APP_PORT}`);
+    });
 });

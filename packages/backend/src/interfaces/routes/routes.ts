@@ -1,9 +1,10 @@
 import { Router, type Request, type Response } from "express";
-import type { IoResponse } from "../schemas/io-response";
+import type { IoResponseSchema } from "../schemas/io-response.schema";
 import response from "../../utils/response";
 import ENV from "../../infras/environ";
 
 // import all routes available
+import authRoute from "./auth/auth.route";
 import userRoute from "./masters/user.route";
 
 // define necessary global function or variables
@@ -41,7 +42,7 @@ const router = Router();
  *              description: Bad request
  */
 router.get("/", (_: Request, res: Response) => {
-    const data: IoResponse = {
+    const data: IoResponseSchema = {
         status: 200,
         message: "Welcome sir, this is great start for you!",
         data: {
@@ -51,6 +52,9 @@ router.get("/", (_: Request, res: Response) => {
     } // [optional] define response using model for best practice
     return response(res, data);
 });
+
+// define route for authentication
+router.use("/auth", authRoute);
 
 // define routes for master
 router.use("/users", userRoute);

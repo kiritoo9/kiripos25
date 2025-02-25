@@ -7,7 +7,8 @@ const config: SequelizeOptions = {
     database: ENV.DB_NAME,
     host: ENV.DB_HOST,
     port: ENV.DB_PORT,
-    dialect: "postgres"
+    dialect: "postgres",
+    logging: false
 }
 
 export default config;

@@ -13,6 +13,9 @@ interface environ {
     DB_PASS: string | undefined;
     DB_NAME: string | undefined;
     DB_PORT: any;
+
+    // secret key
+    SECRET_KEY: string;
 }
 
 const ENV: environ = {
@@ -25,5 +28,7 @@ const ENV: environ = {
     DB_PASS: process.env.DB_PASS ?? "",
     DB_NAME: process.env.DB_NAME ?? "",
     DB_PORT: process.env.DB_PORT ?? 5050, // default pgsql port
+
+    SECRET_KEY: process.env.SECRET_KEY ?? "1234567890",
 }
 export default ENV;

@@ -1,4 +1,4 @@
-export interface IoRequest {
+export interface IoRequestSchema {
     page: number;
     limit: number;
     keywords: string | null;
