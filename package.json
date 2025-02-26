@@ -1,11 +1,10 @@
 {
   "name": "kiripos25",
+  "devDependencies": {
+    "lerna": "^8.1.9"
+  },
   "private": true,
   "workspaces": [
     "packages/*"
-  ],
-  "dependencies": {},
-  "devDependencies": {
-    "lerna": "^8.1.9"
-  }
+  ]
 }
