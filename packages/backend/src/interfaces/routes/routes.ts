@@ -7,6 +7,8 @@ import verifyBearerToken from "../middlewares/verify";
 
 // import all routes available
 import authRoute from "./auth/auth.route";
+import roleRoute from "./masters/roles/role.route";
+import branchRoute from "./masters/branches/branch.route";
 import userRoute from "./masters/users/user.route";
 
 // define necessary global function or variables
@@ -15,7 +17,7 @@ const router = Router();
 // welcome route
 router.get("/", (_: Request, res: Response) => {
     const data: IoResponseSchema = {
-        status: 200,
+        code: 200,
         message: "Welcome sir, this is great start for you!",
         data: {
             name: ENV.APP_NAME,
@@ -29,6 +31,8 @@ router.get("/", (_: Request, res: Response) => {
 router.use("/auth", authRoute);
 
 // define routes for master
+router.use("/roles", verifyBearerToken, roleRoute);
+router.use("/branches", verifyBearerToken, branchRoute);
 router.use("/users", verifyBearerToken, userRoute);
 
 export default router;

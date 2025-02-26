@@ -1,15 +1,15 @@
-import UserRepository from "../../repos/masters/user.repo";
+import BranchRepository from "../../repos/masters/branch.repo";
 
 import type { DatatableSchema } from "../../../interfaces/schemas/datatable.schema";
 import type { QueryParamsSchema } from "../../../interfaces/schemas/query-params.schema";
 import type { RouteContBridgeSchema } from "../../../interfaces/schemas/routecont-bridge.schema";
 
-const userRepo = new UserRepository();
+const branchRepo = new BranchRepository();
 
-class UserController {
+class BranchController {
 
-    async listUser(params: QueryParamsSchema): Promise<RouteContBridgeSchema> {
-        const data = await userRepo.getUserList(params);
+    async listBranch(params: QueryParamsSchema): Promise<RouteContBridgeSchema> {
+        const data = await branchRepo.getBranchList(params);
         let response: RouteContBridgeSchema = {
             success: true,
             data: {
@@ -22,7 +22,7 @@ class UserController {
         return response;
     }
 
-    async userDetail(id: string): Promise<RouteContBridgeSchema> {
+    async branchDetail(id: string): Promise<RouteContBridgeSchema> {
         let response: RouteContBridgeSchema = {
             success: false,
             data: null,
@@ -30,33 +30,16 @@ class UserController {
         }
 
         // check if data not found
-        let user = await userRepo.getUserById(id);
-        if (!user) {
-            response.error = "User not found";
+        let branch = await branchRepo.getBranchById(id);
+        if (!branch) {
+            response.error = "Branch not found";
             return response;
         }
 
         // set response
         response.success = true;
-        response.data = {
-            user: user,
-            user_profile: await userRepo.getUserProfile(id),
-            user_role: await userRepo.getUserRole(id),
-            user_branch: await userRepo.getUserBranch(id),
-        }
+        response.data = branch;
         return response;
-    }
-
-    async createUser() {
-
-    }
-
-    async updateUser() {
-
-    }
-
-    async deleteUser() {
-
     }
 
     async getTable(params: QueryParamsSchema): Promise<RouteContBridgeSchema> {
@@ -68,14 +51,14 @@ class UserController {
         }
 
         // perform to get list data
-        const listUser: RouteContBridgeSchema = await this.listUser(params);
+        const listBranch: RouteContBridgeSchema = await this.listBranch(params);
         let datatable: DatatableSchema = {
             parameters: params,
             count: {
-                total_page: listUser.data.total_page,
-                total_data: listUser.data.total_data,
+                total_page: listBranch.data.total_page,
+                total_data: listBranch.data.total_data,
             },
-            data: listUser.data
+            data: listBranch.data
         }
 
         // set response
@@ -85,4 +68,4 @@ class UserController {
 
 }
 
-export default UserController;
+export default BranchController;

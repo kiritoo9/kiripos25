@@ -1,11 +1,11 @@
 /**
  * @swagger
- * /users:
+ * /roles:
  *  get:
- *      summary: List user
+ *      summary: List role
  *      tags:
- *          - Master - Users
- *      description: List of users available in database
+ *          - Master - Roles
+ *      description: List of roles available in database
  *      parameters:
  *          - name: page
  *            in: query
@@ -61,54 +61,12 @@
  *                                              properties:
  *                                                 id:
  *                                                      type: string
- *                                                 username:
+ *                                                 name:
  *                                                      type: string
- *                                                 profiles:
- *                                                     type: object
- *                                                 roles:
- *                                                     type: object
+ *                                                 description:
+ *                                                      type: string
  *                                                 created_at:
  *                                                     type: string
- *          400:
- *              description: Bad request
- */
-
-/**
- * @swagger
- * /users/{id}:
- *  get:
- *      summary: Detail user
- *      tags:
- *          - Master - Users
- *      description: Detail of user selected, it will return user, user profile, user role, and user branch
- *      parameters:
- *          - name: id
- *            in: path
- *            required: true 
- *            schema:
- *              type: string
- *            description: id of user
- *      responses:
- *          200:
- *              description: Request success
- *              content:
- *                  application/json:
- *                      schema:
- *                          type: object
- *                          properties:
- *                              message:
- *                                  type: string
- *                              data:
- *                                  type: object
- *                                  properties:
- *                                      user:
- *                                          type: object
- *                                      user_profiles:
- *                                         type: object
- *                                      user_roles:
- *                                        type: object
- *                                      user_branches:
- *                                          type: object
  *          400:
  *              description: Bad request
  */

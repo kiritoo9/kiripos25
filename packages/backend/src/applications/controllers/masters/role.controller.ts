@@ -1,15 +1,15 @@
-import UserRepository from "../../repos/masters/user.repo";
+import RoleRepository from "../../repos/masters/role.repo";
 
 import type { DatatableSchema } from "../../../interfaces/schemas/datatable.schema";
 import type { QueryParamsSchema } from "../../../interfaces/schemas/query-params.schema";
 import type { RouteContBridgeSchema } from "../../../interfaces/schemas/routecont-bridge.schema";
 
-const userRepo = new UserRepository();
+const roleRepo = new RoleRepository();
 
-class UserController {
+class RoleController {
 
-    async listUser(params: QueryParamsSchema): Promise<RouteContBridgeSchema> {
-        const data = await userRepo.getUserList(params);
+    async listRole(params: QueryParamsSchema): Promise<RouteContBridgeSchema> {
+        const data = await roleRepo.getRoleList(params);
         let response: RouteContBridgeSchema = {
             success: true,
             data: {
@@ -22,7 +22,7 @@ class UserController {
         return response;
     }
 
-    async userDetail(id: string): Promise<RouteContBridgeSchema> {
+    async roleDetail(id: string): Promise<RouteContBridgeSchema> {
         let response: RouteContBridgeSchema = {
             success: false,
             data: null,
@@ -30,33 +30,16 @@ class UserController {
         }
 
         // check if data not found
-        let user = await userRepo.getUserById(id);
-        if (!user) {
-            response.error = "User not found";
+        let role = await roleRepo.getRoleById(id);
+        if (!role) {
+            response.error = "Role not found";
             return response;
         }
 
         // set response
         response.success = true;
-        response.data = {
-            user: user,
-            user_profile: await userRepo.getUserProfile(id),
-            user_role: await userRepo.getUserRole(id),
-            user_branch: await userRepo.getUserBranch(id),
-        }
+        response.data = role;
         return response;
-    }
-
-    async createUser() {
-
-    }
-
-    async updateUser() {
-
-    }
-
-    async deleteUser() {
-
     }
 
     async getTable(params: QueryParamsSchema): Promise<RouteContBridgeSchema> {
@@ -68,14 +51,14 @@ class UserController {
         }
 
         // perform to get list data
-        const listUser: RouteContBridgeSchema = await this.listUser(params);
+        const listRole: RouteContBridgeSchema = await this.listRole(params);
         let datatable: DatatableSchema = {
             parameters: params,
             count: {
-                total_page: listUser.data.total_page,
-                total_data: listUser.data.total_data,
+                total_page: listRole.data.total_page,
+                total_data: listRole.data.total_data,
             },
-            data: listUser.data
+            data: listRole.data
         }
 
         // set response
@@ -85,4 +68,4 @@ class UserController {
 
 }
 
-export default UserController;
+export default RoleController;

@@ -1,11 +1,11 @@
 /**
  * @swagger
- * /users:
+ * /branches:
  *  get:
- *      summary: List user
+ *      summary: List branches
  *      tags:
- *          - Master - Users
- *      description: List of users available in database
+ *          - Master - Branches
+ *      description: List of branches available in database
  *      parameters:
  *          - name: page
  *            in: query
@@ -61,12 +61,14 @@
  *                                              properties:
  *                                                 id:
  *                                                      type: string
- *                                                 username:
+ *                                                 name:
  *                                                      type: string
- *                                                 profiles:
- *                                                     type: object
- *                                                 roles:
- *                                                     type: object
+ *                                                 phone:
+ *                                                      type: string
+ *                                                 address:
+ *                                                      type: string
+ *                                                 remark:
+ *                                                      type: string
  *                                                 created_at:
  *                                                     type: string
  *          400:
@@ -75,19 +77,19 @@
 
 /**
  * @swagger
- * /users/{id}:
+ * /branches/{id}:
  *  get:
- *      summary: Detail user
+ *      summary: Detail branch
  *      tags:
- *          - Master - Users
- *      description: Detail of user selected, it will return user, user profile, user role, and user branch
+ *          - Master - Branches
+ *      description: Detail information of branch selected
  *      parameters:
  *          - name: id
  *            in: path
  *            required: true 
  *            schema:
  *              type: string
- *            description: id of user
+ *            description: id of branch
  *      responses:
  *          200:
  *              description: Request success
@@ -101,14 +103,18 @@
  *                              data:
  *                                  type: object
  *                                  properties:
- *                                      user:
- *                                          type: object
- *                                      user_profiles:
- *                                         type: object
- *                                      user_roles:
- *                                        type: object
- *                                      user_branches:
- *                                          type: object
+ *                                      id:
+ *                                          type: string
+ *                                      name:
+ *                                         type: string
+ *                                      phone:
+ *                                        type: string
+ *                                      address:
+ *                                          type: string
+ *                                      remark:
+ *                                          type: string
+ *                                      created_at:
+ *                                          type: string
  *          400:
  *              description: Bad request
  */
