@@ -16,7 +16,7 @@ router.post("/login", async (req: Request, res: Response) => {
     const { error } = loginValidation.validate(body);
     if (error) {
         return response(res, {
-            status: 400,
+            code: 400,
             message: error?.details?.length > 0 ? error.details[0].message : "Bad request",
             data: body
         });
@@ -26,13 +26,14 @@ router.post("/login", async (req: Request, res: Response) => {
     const data: RouteContBridgeSchema = await authController.login(body);
     if (!data.success) {
         return response(res, {
-            status: 400,
-            message: data.error
+            code: 400,
+            message: "Login failed",
+            error: data?.error ?? "Something went wrong"
         });
     }
 
     return response(res, {
-        status: 200,
+        code: 200,
         message: "Login success",
         data: data.data
     });
@@ -44,7 +45,7 @@ router.post("/refresh-token", async (req: Request, res: Response) => {
     const { error } = refreshTokenValidation.validate(body);
     if (error) {
         return response(res, {
-            status: 400,
+            code: 400,
             message: error?.details?.length > 0 ? error.details[0].message : "Bad request",
             data: body
         });
@@ -54,13 +55,14 @@ router.post("/refresh-token", async (req: Request, res: Response) => {
     const data: RouteContBridgeSchema = await authController.refreshToken(body);
     if (!data.success) {
         return response(res, {
-            status: 400,
-            message: data.error
+            code: 400,
+            message: "Refresh token failed",
+            error: data?.error ?? "Something went wrong"
         });
     }
 
     return response(res, {
-        status: 200,
+        code: 200,
         message: "Refresh token success",
         data: data.data
     });

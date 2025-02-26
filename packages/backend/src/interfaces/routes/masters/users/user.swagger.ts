@@ -36,8 +36,6 @@
  *                      schema:
  *                          type: object
  *                          properties:
- *                              status: 
- *                                  type: boolean
  *                              message:
  *                                  type: string
  *                              data:
@@ -75,6 +73,46 @@
  *                                                     type: string
  *                                                 created_at:
  *                                                     type: string
+ *          400:
+ *              description: Bad request
+ */
+
+/**
+ * @swagger
+ * /users/{id}:
+ *  get:
+ *      summary: Detail user
+ *      tags:
+ *          - Master - Users
+ *      description: Detail of user selected, it will return user, user profile, user role, and user branch
+ *      parameters:
+ *          - name: id
+ *            in: path
+ *            required: true 
+ *            schema:
+ *              type: string
+ *            description: id of user
+ *      responses:
+ *          200:
+ *              description: Request success
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              message:
+ *                                  type: string
+ *                              data:
+ *                                  type: object
+ *                                  properties:
+ *                                      user:
+ *                                          type: object
+ *                                      user_profiles:
+ *                                         type: object
+ *                                      user_roles:
+ *                                        type: object
+ *                                      user_branches:
+ *                                          type: object
  *          400:
  *              description: Bad request
  */
