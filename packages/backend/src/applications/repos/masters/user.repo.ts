@@ -7,6 +7,7 @@ import UserBranches from "../../models/user_branches.model";
 import UserRoles from "../../models/user_roles_model";
 import Roles from "../../models/roles.model";
 import Branches from "../../models/branches.model";
+import sequelize from "../../../infras/database/sequelize";
 
 class UserRepository {
 
@@ -94,7 +95,7 @@ class UserRepository {
                         [Op.or]: [
                             {
                                 username: {
-                                    [Op.iLike]: `${params?.search}`
+                                    [Op.iLike]: `%${params?.search}%`
                                 }
                             }
                         ]
@@ -112,22 +113,22 @@ class UserRepository {
                         [Op.or]: [
                             {
                                 fullname: {
-                                    [Op.iLike]: `${params?.search}`
+                                    [Op.iLike]: `%${params?.search}%`
                                 }
                             },
                             {
                                 email: {
-                                    [Op.iLike]: `${params?.search}`
+                                    [Op.iLike]: `%${params?.search}%`
                                 }
                             },
                             {
                                 phone: {
-                                    [Op.iLike]: `${params?.search}`
+                                    [Op.iLike]: `%${params?.search}%`
                                 }
                             },
                             {
                                 address: {
-                                    [Op.iLike]: `${params?.search}`
+                                    [Op.iLike]: `%${params?.search}%`
                                 }
                             }
                         ]
@@ -135,19 +136,44 @@ class UserRepository {
                 },
                 {
                     model: UserRoles,
-                    attributes: ["name"],
-                    where: {
-                        [Op.or]: [
-                            {
-                                name: {
-                                    [Op.iLike]: `${params?.search}`
-                                }
-                            }
-                        ]
-                    }
+                    attributes: ["id", "role_id"],
+                    include: [
+                        {
+                            model: Roles,
+                            attributes: ["name"],
+                        }
+                    ]
                 }
             ]
         });
+    }
+
+    async createUserWithAttributes(
+        user: { [key: string]: any },
+        user_profile: { [key: string]: any },
+        user_role: { [key: string]: any },
+        user_branch: { [key: string]: any }
+    ) {
+        const transaction = await sequelize.transaction();
+        try {
+            // preparing to insert with transaction anchor
+            const user_result = await Users.create(user, { transaction });
+            const user_profile_result = await UserProfiles.create(user_profile, { transaction });
+            const user_role_result = await UserRoles.create(user_role, { transaction });
+            const user_branch_result = await UserBranches.create(user_branch, { transaction });
+
+            // start inserting
+            await transaction.commit();
+            return {
+                user: user_result,
+                user_profile: user_profile_result,
+                user_role: user_role_result,
+                user_branch: user_branch_result
+            }
+        } catch (error) {
+            transaction.rollback();
+            throw error;
+        }
     }
 
 }

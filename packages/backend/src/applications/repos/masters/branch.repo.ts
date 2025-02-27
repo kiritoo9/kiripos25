@@ -4,7 +4,7 @@ import type { QueryParamsSchema } from "../../../interfaces/schemas/query-params
 import Branches from "../../models/branches.model";
 import type { branchSchema } from "../../../interfaces/schemas/masters/branch.schema";
 
-class RoleRepository {
+class BranchRepository {
 
     async getBranchById(id: string) {
         return await Branches.findOne({
@@ -79,4 +79,4 @@ class RoleRepository {
 
 }
 
-export default RoleRepository;
+export default BranchRepository;

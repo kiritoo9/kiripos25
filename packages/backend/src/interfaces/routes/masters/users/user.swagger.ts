@@ -112,3 +112,56 @@
  *          400:
  *              description: Bad request
  */
+
+/**
+ * @swagger
+ * /users:
+ *  post:
+ *    summary: Create User
+ *    description: Create new user
+ *    tags: 
+ *      - Master - Users
+ *    requestBody:
+ *      required: true
+ *      content:
+ *          application/json:
+ *              schema:
+ *                  type: object
+ *                  required:
+ *                    - role_id
+ *                    - branch_id
+ *                    - username
+ *                    - password
+ *                    - fullname
+ *                  properties:
+ *                      role_id:
+ *                         type: string
+ *                         example: uuid-of-role
+ *                      branch_id:
+ *                         type: string
+ *                         example: uuid-of-branch
+ *                      username:
+ *                         type: string
+ *                         example: john
+ *                      password:
+ *                         type: string
+ *                         example: 12345
+ *                         format: password
+ *                      fullname:
+ *                        type: string
+ *                        example: John Doe
+ *                      email:
+ *                        type: string
+ *                        example: jonhdoe@email.com
+ *                      phone:
+ *                        type: string
+ *                        example: 0899712312
+ *                      address:
+ *                        type: string
+ *                        example: Jl. Merpati Setia Makmur, Jatibening, Jakarta Timur
+ *    responses:
+ *      201:
+ *        description: Data is successfully created
+ *      400:
+ *        description: Bad request
+ */

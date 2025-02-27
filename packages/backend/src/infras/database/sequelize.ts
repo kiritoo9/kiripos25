@@ -39,6 +39,16 @@ sequelize.addModels([
     Logs
 ]);
 
+/**
+ * Below here is the weird rule for initiating foreign_key
+ * Specifically for backfowrad process, e.g children -> join to parent
+ * Other wise for case parent -> join to children, it can be handled using @BelongsTo() in model files
+ * 
+ * @date 2025-02-27
+ */
+Users.hasOne(UserProfiles, { foreignKey: "user_id" });
+Users.hasOne(UserRoles, { foreignKey: "user_id" });
+
 export default sequelize;
 
 export const ensureConnection = async () => {
