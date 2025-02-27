@@ -2,6 +2,7 @@ import { Op } from "sequelize";
 import type { QueryParamsSchema } from "../../../interfaces/schemas/query-params.schema";
 
 import Branches from "../../models/branches.model";
+import type { branchSchema } from "../../../interfaces/schemas/masters/branch.schema";
 
 class RoleRepository {
 
@@ -29,32 +30,50 @@ class RoleRepository {
         return await Branches.findAndCountAll({
             attributes: ["id", "name", "phone", "address", "remark", "created_at"],
             where: {
-                [Op.or]: [
+                [Op.and]: [
+                    { deleted: false },
                     {
-                        name: {
-                            [Op.iLike]: `%${params?.search}%`
-                        }
-                    },
-                    {
-                        phone: {
-                            [Op.iLike]: `%${params?.search}%`
-                        }
-                    },
-                    {
-                        address: {
-                            [Op.iLike]: `%${params?.search}%`
-                        }
-                    },
-                    {
-                        remark: {
-                            [Op.iLike]: `%${params?.search}%`
-                        }
+                        [Op.or]: [
+                            {
+                                name: {
+                                    [Op.iLike]: `%${params?.search}%`
+                                }
+                            },
+                            {
+                                phone: {
+                                    [Op.iLike]: `%${params?.search}%`
+                                }
+                            },
+                            {
+                                address: {
+                                    [Op.iLike]: `%${params?.search}%`
+                                }
+                            },
+                            {
+                                remark: {
+                                    [Op.iLike]: `%${params?.search}%`
+                                }
+                            }
+                        ]
                     }
                 ]
             },
             limit: params.limit,
             offset: (params.page - 1) * params.limit,
             order: [order]
+        });
+    }
+
+    async createBranch(data: branchSchema) {
+        return await Branches.create({ ...data });
+    }
+
+    async updateBranch(id: string, data: branchSchema | { [key: string]: any }) {
+        return await Branches.update({
+            ...data,
+            updated_at: new Date()
+        }, {
+            where: { id }
         });
     }
 

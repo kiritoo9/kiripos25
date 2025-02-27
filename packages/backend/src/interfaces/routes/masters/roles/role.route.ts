@@ -27,4 +27,23 @@ router.get("/", async (req: Request, res: Response) => {
     });
 });
 
+router.get("/:id", async (req: Request, res: Response) => {
+    const result: RouteContBridgeSchema = await roleController.roleDetail(req.params.id);
+    let data: any = {
+        code: 200,
+        message: "Request success",
+        data: null
+    }
+
+    if (!result.success) {
+        data.code = 404;
+        data.message = result.error;
+        return response(res, data);
+    }
+
+    // success response
+    data.data = result.data;
+    return response(res, data);
+});
+
 export default router;

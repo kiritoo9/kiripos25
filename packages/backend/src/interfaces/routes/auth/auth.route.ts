@@ -17,8 +17,9 @@ router.post("/login", async (req: Request, res: Response) => {
     if (error) {
         return response(res, {
             code: 400,
-            message: error?.details?.length > 0 ? error.details[0].message : "Bad request",
-            data: body
+            message: "Error payload format",
+            data: body,
+            error: error
         });
     }
 

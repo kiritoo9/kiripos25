@@ -11,6 +11,6 @@ const loginValidation = Joi.object({
 });
 
 export {
-    loginValidation,
-    type loginSchema
+    type loginSchema,
+    loginValidation
 }

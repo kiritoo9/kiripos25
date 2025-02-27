@@ -70,3 +70,45 @@
  *          400:
  *              description: Bad request
  */
+
+/**
+ * @swagger
+ * /roles/{id}:
+ *  get:
+ *      summary: Detail role
+ *      tags:
+ *          - Master - Roles
+ *      description: Detail information of role selected
+ *      parameters:
+ *          - name: id
+ *            in: path
+ *            required: true 
+ *            schema:
+ *              type: string
+ *            description: id of role
+ *      responses:
+ *          200:
+ *              description: Request success
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              message:
+ *                                  type: string
+ *                              data:
+ *                                  type: object
+ *                                  properties:
+ *                                      id:
+ *                                          type: string
+ *                                      name:
+ *                                         type: string
+ *                                      description:
+ *                                          type: string
+ *                                      created_at:
+ *                                          type: string
+ *          400:
+ *              description: Bad request
+ *          404:
+ *              description: Data is not found
+ */

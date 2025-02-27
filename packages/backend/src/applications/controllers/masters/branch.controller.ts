@@ -3,6 +3,7 @@ import BranchRepository from "../../repos/masters/branch.repo";
 import type { DatatableSchema } from "../../../interfaces/schemas/datatable.schema";
 import type { QueryParamsSchema } from "../../../interfaces/schemas/query-params.schema";
 import type { RouteContBridgeSchema } from "../../../interfaces/schemas/routecont-bridge.schema";
+import type { branchSchema } from "../../../interfaces/schemas/masters/branch.schema";
 
 const branchRepo = new BranchRepository();
 
@@ -64,6 +65,43 @@ class BranchController {
         // set response
         response.data = datatable;
         return response;
+    }
+
+    async createBranch(body: branchSchema): Promise<RouteContBridgeSchema> {
+        let response: RouteContBridgeSchema = {
+            success: false,
+            data: [],
+            error: []
+        }
+
+        try {
+            const result = await branchRepo.createBranch(body);
+            response.success = true;
+            response.data = result;
+            return response;
+        } catch (error: any) {
+            response.error = error?.message;
+            return response;
+        }
+
+    }
+
+    async updateBranch(id: string, body: branchSchema | { [key: string]: any }): Promise<RouteContBridgeSchema> {
+        let response: RouteContBridgeSchema = {
+            success: false,
+            data: [],
+            error: []
+        }
+
+        try {
+            const result = await branchRepo.updateBranch(id, body);
+            response.success = true;
+            response.data = result;
+            return response;
+        } catch (error: any) {
+            response.error = error?.message;
+            return response;
+        }
     }
 
 }

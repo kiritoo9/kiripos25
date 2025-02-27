@@ -117,4 +117,120 @@
  *                                          type: string
  *          400:
  *              description: Bad request
+ *          404:
+ *              description: Data is not found
+ */
+
+/**
+ * @swagger
+ * /branches:
+ *  post:
+ *    summary: Create Branch
+ *    description: Create new branch
+ *    tags: 
+ *      - Master - Branches
+ *    requestBody:
+ *      required: true
+ *      content:
+ *          application/json:
+ *              schema:
+ *                  type: object
+ *                  required:
+ *                    - name
+ *                  properties:
+ *                      name:
+ *                         type: string
+ *                         example: Branch Sample
+ *                      phone:
+ *                        type: number
+ *                        example: 098761231
+ *                      address:
+ *                        type: string
+ *                        example: Jl. Kramat jati no. 9912, Jakarta Timur
+ *                      remark:
+ *                        type: string
+ *                        example: Branch for specific products
+ *    responses:
+ *      201:
+ *        description: Data is successfully created
+ *      400:
+ *        description: Bad request
+ */
+
+/**
+ * @swagger
+ * /branches/{id}:
+ *  put:
+ *    summary: Update Branch
+ *    description: Update existing branch
+ *    tags: 
+ *      - Master - Branches
+ *    parameters:
+ *          - name: id
+ *            in: path
+ *            required: true 
+ *            schema:
+ *              type: string
+ *            description: id of branch
+ *    requestBody:
+ *      required: true
+ *      content:
+ *          application/json:
+ *              schema:
+ *                  type: object
+ *                  required:
+ *                    - name
+ *                  properties:
+ *                      name:
+ *                         type: string
+ *                         example: Branch Sample
+ *                      phone:
+ *                        type: number
+ *                        example: 098761231
+ *                      address:
+ *                        type: string
+ *                        example: Jl. Kramat jati no. 9912, Jakarta Timur
+ *                      remark:
+ *                        type: string
+ *                        example: Branch for specific products
+ *    responses:
+ *      201:
+ *        description: Data is successfully updated
+ *      400:
+ *        description: Bad request
+ *      404:
+ *        description: Data is not found
+ */
+
+/**
+ * @swagger
+ * /branches/{id}:
+ *  delete:
+ *      summary: Delete branch
+ *      tags:
+ *          - Master - Branches
+ *      description: Delete branch by id
+ *      parameters:
+ *          - name: id
+ *            in: path
+ *            required: true 
+ *            schema:
+ *              type: string
+ *            description: id of branch
+ *      responses:
+ *          201:
+ *              description: Data deleted
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              message:
+ *                                  type: string
+ *                              data:
+ *                                  type: object
+ *          400:
+ *              description: Bad request
+ *          404:
+ *              description: Data is not found
  */
