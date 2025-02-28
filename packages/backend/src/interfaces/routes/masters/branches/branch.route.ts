@@ -138,9 +138,8 @@ router.put("/:id", async (req: Request, res: Response) => {
 
         // success response
         return response(res, {
-            code: 201,
-            message: "Data is succssfully updated",
-            data: result.data
+            code: 204,
+            message: "Data is succssfully updated"
         });
     } catch (error: any) {
         return response(res, {
@@ -164,7 +163,11 @@ router.delete("/:id", async (req: Request, res: Response) => {
         }
 
         // do (soft)delete branch
-        const result: RouteContBridgeSchema = await branchController.updateBranch(req.params.id, { deleted: true });
+        const updated_data = {
+            deleted: true,
+            updated_at: new Date()
+        }
+        const result: RouteContBridgeSchema = await branchController.updateBranch(req.params.id, updated_data);
         if (!result.success) {
             return response(res, {
                 code: 400,
@@ -175,9 +178,8 @@ router.delete("/:id", async (req: Request, res: Response) => {
 
         // success response
         return response(res, {
-            code: 201,
-            message: "Data is succssfully deleted",
-            data: result.data
+            code: 204,
+            message: "Data is succssfully deleted"
         });
     } catch (error: any) {
         return response(res, {

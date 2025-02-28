@@ -194,7 +194,7 @@
  *                        type: string
  *                        example: Branch for specific products
  *    responses:
- *      201:
+ *      204:
  *        description: Data is successfully updated
  *      400:
  *        description: Bad request
@@ -218,17 +218,8 @@
  *              type: string
  *            description: id of branch
  *      responses:
- *          201:
- *              description: Data deleted
- *              content:
- *                  application/json:
- *                      schema:
- *                          type: object
- *                          properties:
- *                              message:
- *                                  type: string
- *                              data:
- *                                  type: object
+ *          204:
+ *              description: Data is successfully deleted
  *          400:
  *              description: Bad request
  *          404:

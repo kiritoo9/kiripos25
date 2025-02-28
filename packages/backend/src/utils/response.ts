@@ -7,6 +7,6 @@ const response = (res: Response, data: IoResponseSchema) => {
     }
     if (data?.data !== undefined) body["data"] = data.data;
     if (data?.error !== undefined) body["error"] = data.error;
-    res.status(data.code).json(body);
+    res.status(data?.code === undefined ? 400 : data.code).json(body);
 }
 export default response;

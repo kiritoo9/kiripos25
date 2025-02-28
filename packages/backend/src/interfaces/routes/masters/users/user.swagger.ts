@@ -165,3 +165,87 @@
  *      400:
  *        description: Bad request
  */
+
+/**
+ * @swagger
+ * /users/{id}:
+ *   put:
+ *     summary: Update User
+ *     description: Update an existing user
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the user
+ *     tags:
+ *       - Master - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - role_id
+ *               - branch_id
+ *               - username
+ *               - fullname
+ *             properties:
+ *               role_id:
+ *                 type: string
+ *                 example: uuid-of-role
+ *               branch_id:
+ *                 type: string
+ *                 example: uuid-of-branch
+ *               username:
+ *                 type: string
+ *                 example: john
+ *               password:
+ *                 type: string
+ *                 example: 12345
+ *                 format: password
+ *               fullname:
+ *                 type: string
+ *                 example: John Doe
+ *               email:
+ *                 type: string
+ *                 example: johndoe@email.com
+ *               phone:
+ *                 type: string
+ *                 example: 0899712312
+ *               address:
+ *                 type: string
+ *                 example: "-"
+ *     responses:
+ *       204:
+ *         description: Data is successfully updated
+ *       400:
+ *         description: Bad request
+ */
+
+
+/**
+ * @swagger
+ * /users/{id}:
+ *  delete:
+ *      summary: Delete user
+ *      tags:
+ *          - Master - Users
+ *      description: Delete user by id
+ *      parameters:
+ *          - name: id
+ *            in: path
+ *            required: true 
+ *            schema:
+ *              type: string
+ *            description: id of user
+ *      responses:
+ *          204:
+ *              description: Data is susccessfully deleted
+ *          400:
+ *              description: Bad request
+ *          404:
+ *              description: Data is not found
+ */

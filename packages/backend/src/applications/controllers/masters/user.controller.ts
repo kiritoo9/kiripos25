@@ -1,4 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
+import bcrypt from "bcrypt";
+
 import UserRepository from "../../repos/masters/user.repo";
 import RoleRepository from "../../repos/masters/role.repo";
 
@@ -82,12 +84,18 @@ class UserController {
             return response;
         }
 
+        // validate password to not empty | undefiend | null
+        if (body?.password === undefined || !body.password || body.password == "") {
+            response.error = "Password cannot be empty";
+            return response;
+        }
+
         // perform to insert -> [users, user_profiles, user_roles, user_branches]
         // using transaction-commit way
         const user = {
             id: uuidv4(),
             username: body.username,
-            password: body.password
+            password: await bcrypt.hash(body.password, 10)
         }
 
         const user_profile = {
@@ -126,12 +134,150 @@ class UserController {
         }
     }
 
-    async updateUser() {
+    async updateUser(id: string, body: userSchema): Promise<RouteContBridgeSchema> {
+        let response: RouteContBridgeSchema = {
+            success: false,
+            data: null,
+            error: null
+        }
 
+        // check user exists by id
+        const exists = await userRepo.getUserById(id);
+        if (!exists) {
+            response.code = 404; // define specific error code
+            response.error = "Data is not found";
+            return response;
+        }
+
+        // check duplicate username by id and username
+        // if data not exists then check with only username [old-pattern]
+        let username = await userRepo.getUserByUsername(body.username, id);
+        if (!username) {
+            username = await userRepo.getUserByUsername(body.username);
+            if (username) {
+                response.error = "Username is already exists";
+                return response;
+            }
+        }
+
+        // check existing role
+        const role = await roleRepo.getRoleById(body.role_id);
+        if (!role) {
+            response.error = "RoleID is not found, please check the data";
+            return response;
+        }
+
+        // check existing branch
+        const branch = await branchRepo.getBranchById(body.branch_id);
+        if (!branch) {
+            response.error = "BranchID is not found, please check the data";
+            return response;
+        }
+
+        // preparing data to update -> [users, user_profiles, user_roles, user_branches]
+        // using transaction-commit way
+        let user: { [key: string]: any } = {
+            username: body.username,
+            updated_at: new Date()
+        }
+        if (body?.password !== undefined && body.password && body.password !== "") {
+            user["password"] = await bcrypt.hash(body.password, 10);
+        }
+
+        const user_profile = {
+            fullname: body.fullname,
+            email: body.phone,
+            phone: body.phone,
+            address: body.address,
+            updated_at: new Date()
+        }
+
+        const user_role = {
+            role_id: body.role_id,
+            updated_at: new Date()
+        }
+
+        const user_branch = {
+            branch_id: body.branch_id,
+            branch_head: body.branch_head,
+            updated_at: new Date()
+        }
+
+        // perform to update
+        try {
+            const result = await userRepo.updateUserWithAttributes(
+                id,
+                user,
+                user_profile,
+                user_role,
+                user_branch
+            );
+
+            // success condition
+            response.data = result;
+            response.success = true;
+            return response;
+        } catch (error: any) {
+            response.error = error?.message;
+            return response;
+        }
     }
 
-    async deleteUser() {
+    async deleteUser(id: string): Promise<RouteContBridgeSchema> {
+        let response: RouteContBridgeSchema = {
+            success: false,
+            data: null,
+            error: null
+        }
 
+        // check user exists
+        const exist = await userRepo.getUserById(id);
+        if (!exist) {
+            response.error = "Data is not found";
+            response.code = 404; // define specific error code
+            return response;
+        }
+
+        // preparing data to delete
+        const today: Date = new Date();
+        const user = {
+            deleted: true,
+            updated_at: today
+        }
+
+        const user_profile = {
+            deleted: true,
+            updated_at: today
+        }
+
+        const user_role = {
+            deleted: true,
+            updated_at: today
+        }
+
+        const user_branch = {
+            deleted: true,
+            updated_at: today
+        }
+
+        // perform to delete data
+        try {
+            const result = await userRepo.updateUserWithAttributes(
+                id,
+                user,
+                user_profile,
+                user_role,
+                user_branch
+            );
+
+            // succes condition
+            response.success = true;
+            response.data = result;
+            return response;
+        } catch (error: any) {
+            response.error = error?.message;
+            return response;
+        }
     }
 
     async getTable(params: QueryParamsSchema): Promise<RouteContBridgeSchema> {

@@ -100,4 +100,66 @@ router.post("/", async (req: Request, res: Response) => {
     }
 });
 
+router.put("/:id", async (req: Request, res: Response) => {
+    try {
+        // validate payload-body
+        const body: userSchema = req.body;
+        const { error } = userValidation.validate(body);
+        if (error) {
+            return response(res, {
+                code: 400,
+                message: "Error payload body format",
+                error: error
+            });
+        }
+
+        // perform to update user
+        const result: RouteContBridgeSchema = await userController.updateUser(req.params.id, body);
+        if (!result.success) {
+            return response(res, {
+                code: result?.code === undefined ? 400 : result.code, // handle multiple error code
+                message: "Something went wrong",
+                error: result.error
+            });
+        }
+
+        // success condition
+        return response(res, {
+            code: 204,
+            message: "Data is successfully updated"
+        });
+    } catch (error: any) {
+        return response(res, {
+            code: 400,
+            message: "Something went wrong",
+            error: error?.message
+        });
+    }
+});
+
+router.delete("/:id", async (req: Request, res: Response) => {
+    try {
+        const result: RouteContBridgeSchema = await userController.deleteUser(req.params.id);
+        if (!result.success) {
+            return response(res, {
+                code: 400,
+                message: "Something went wrong",
+                error: result.error
+            });
+        }
+
+        // success condition
+        return response(res, {
+            code: 204,
+            message: "Data is succesfully deleted"
+        });
+    } catch (error: any) {
+        return response(res, {
+            code: 400,
+            message: "Something went wrong",
+            error: error?.message
+        });
+    }
+});
+
 export default router;
