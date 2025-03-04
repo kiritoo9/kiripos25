@@ -1,14 +1,14 @@
 import { Op } from "sequelize";
 import type { QueryParamsSchema } from "../../../interfaces/schemas/query-params.schema";
 
-import Branches from "../../models/branches.model";
-import type { branchSchema } from "../../../interfaces/schemas/masters/branch.schema";
+import Menus from "../../models/menus.model";
+import type { menuSchema } from "../../../interfaces/schemas/masters/menu.schema";
 
-class BranchRepository {
+class MenuRepository {
 
-    async getBranchById(id: string) {
-        return await Branches.findOne({
-            attributes: ["id", "name", "phone", "address", "remark", "created_at"],
+    async getMenuById(id: string) {
+        return await Menus.findOne({
+            attributes: ["id", "parent_id", "name", "label", "url", "icon", "created_at"],
             where: {
                 deleted: false,
                 id: id
@@ -16,7 +16,7 @@ class BranchRepository {
         });
     }
 
-    async getBranchList(params: QueryParamsSchema) {
+    async getMenuList(params: QueryParamsSchema) {
         // prepare data orderBy
         let order: [string, string] = ["created_at", "DESC"]; // default value
         if (params.order) {
@@ -27,8 +27,8 @@ class BranchRepository {
         }
 
         // perform to query
-        return await Branches.findAndCountAll({
-            attributes: ["id", "name", "phone", "address", "remark", "created_at"],
+        return await Menus.findAndCountAll({
+            attributes: ["id", "parent_id", "name", "label", "url", "icon", "created_at"],
             where: {
                 [Op.and]: [
                     { deleted: false },
@@ -40,17 +40,12 @@ class BranchRepository {
                                 }
                             },
                             {
-                                phone: {
+                                label: {
                                     [Op.iLike]: `%${params?.search}%`
                                 }
                             },
                             {
-                                address: {
-                                    [Op.iLike]: `%${params?.search}%`
-                                }
-                            },
-                            {
-                                remark: {
+                                url: {
                                     [Op.iLike]: `%${params?.search}%`
                                 }
                             }
@@ -64,12 +59,12 @@ class BranchRepository {
         });
     }
 
-    async createBranch(data: branchSchema) {
-        return await Branches.create({ ...data });
+    async createMenu(data: menuSchema) {
+        return await Menus.create({ ...data });
     }
 
-    async updateBranch(id: string, data: branchSchema | { [key: string]: any }) {
-        return await Branches.update({
+    async updateMenu(id: string, data: menuSchema | { [key: string]: any }) {
+        return await Menus.update({
             ...data,
             updated_at: new Date()
         }, {
@@ -79,4 +74,4 @@ class BranchRepository {
 
 }
 
-export default BranchRepository;
+export default MenuRepository;

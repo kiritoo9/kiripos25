@@ -1,17 +1,15 @@
 import { Router, type Request, type Response } from "express";
-import type { QueryParamsSchema } from "../../../schemas/query-params.schema";
-
-import type { RouteContBridgeSchema } from "../../../schemas/routecont-bridge.schema";
-
 import response from "../../../../utils/response";
+import type { QueryParamsSchema } from "../../../schemas/query-params.schema";
 import queryParams from "../../../../utils/query-params";
-import BranchController from "../../../../applications/controllers/masters/branch.controller";
-import { branchValidation, type branchSchema } from "../../../schemas/masters/branch.schema";
+import type { RouteContBridgeSchema } from "../../../schemas/routecont-bridge.schema";
+import MenuController from "../../../../applications/controllers/masters/menu.controller";
+import { menuValidation, type menuSchema } from "../../../schemas/masters/menu.schema";
 
 // define necessary global function or variables
 // such as router, repos, models, and controllers
 const router = Router();
-const branchController = new BranchController();
+const menuController = new MenuController();
 
 router.get("/", async (req: Request, res: Response) => {
     try {
@@ -19,7 +17,7 @@ router.get("/", async (req: Request, res: Response) => {
         const params: QueryParamsSchema = queryParams(req.query);
 
         // call controller for list and count
-        const list: RouteContBridgeSchema = await branchController.getTable(params);
+        const list: RouteContBridgeSchema = await menuController.getTable(params);
 
         // send to response
         return response(res, {
@@ -38,7 +36,7 @@ router.get("/", async (req: Request, res: Response) => {
 
 router.get("/:id", async (req: Request, res: Response) => {
     try {
-        const result: RouteContBridgeSchema = await branchController.branchDetail(req.params.id);
+        const result: RouteContBridgeSchema = await menuController.menuDetail(req.params.id);
         let data: any = {
             code: 200,
             message: "Request success",
@@ -66,8 +64,8 @@ router.get("/:id", async (req: Request, res: Response) => {
 router.post("/", async (req: Request, res: Response) => {
     try {
         // validate payload-body
-        const body: branchSchema = req.body;
-        const { error } = branchValidation.validate(body);
+        const body: menuSchema = req.body;
+        const { error } = menuValidation.validate(body);
         if (error) {
             return response(res, {
                 code: 400,
@@ -78,7 +76,7 @@ router.post("/", async (req: Request, res: Response) => {
         }
 
         // do create data
-        const result: RouteContBridgeSchema = await branchController.createBranch(body);
+        const result: RouteContBridgeSchema = await menuController.createMenu(body);
         if (!result.success) {
             return response(res, {
                 code: 400,
@@ -105,8 +103,8 @@ router.post("/", async (req: Request, res: Response) => {
 router.put("/:id", async (req: Request, res: Response) => {
     try {
         // validate payload-body
-        const body: branchSchema = req.body;
-        const { error } = branchValidation.validate(body);
+        const body: menuSchema = req.body;
+        const { error } = menuValidation.validate(body);
         if (error) {
             return response(res, {
                 code: 400,
@@ -117,7 +115,7 @@ router.put("/:id", async (req: Request, res: Response) => {
         }
 
         // check existing data
-        const data: RouteContBridgeSchema = await branchController.branchDetail(req.params.id);
+        const data: RouteContBridgeSchema = await menuController.menuDetail(req.params.id);
         if (!data.success) {
             return response(res, {
                 code: 404,
@@ -127,7 +125,7 @@ router.put("/:id", async (req: Request, res: Response) => {
         }
 
         // do update data
-        const result: RouteContBridgeSchema = await branchController.updateBranch(req.params.id, body);
+        const result: RouteContBridgeSchema = await menuController.updateMenu(req.params.id, body);
         if (!result.success) {
             return response(res, {
                 code: 400,
@@ -153,7 +151,7 @@ router.put("/:id", async (req: Request, res: Response) => {
 router.delete("/:id", async (req: Request, res: Response) => {
     try {
         // check existing data
-        const data: RouteContBridgeSchema = await branchController.branchDetail(req.params.id);
+        const data: RouteContBridgeSchema = await menuController.menuDetail(req.params.id);
         if (!data.success) {
             return response(res, {
                 code: 404,
@@ -167,7 +165,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
             deleted: true,
             updated_at: new Date()
         }
-        const result: RouteContBridgeSchema = await branchController.updateBranch(req.params.id, updated_data);
+        const result: RouteContBridgeSchema = await menuController.updateMenu(req.params.id, updated_data);
         if (!result.success) {
             return response(res, {
                 code: 400,

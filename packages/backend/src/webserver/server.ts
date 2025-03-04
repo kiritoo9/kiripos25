@@ -30,7 +30,9 @@ const swaggerOptions = {
             { name: "Auth", description: "Authentication" },
             { name: "Master - Roles", description: "Data master of roles" },
             { name: "Master - Branches", description: "Data master of branches" },
-            { name: "Master - Users", description: "Data master of users" }
+            { name: "Master - Users", description: "Data master of users" },
+            { name: "Master - Menus", description: "Data master of menus" },
+            { name: "Master - Role Menus", description: "List of menus each roles" },
         ],
         servers: [
             {

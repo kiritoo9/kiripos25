@@ -1,25 +1,23 @@
 import { Router, type Request, type Response } from "express";
-import type { QueryParamsSchema } from "../../../schemas/query-params.schema";
-
-import type { RouteContBridgeSchema } from "../../../schemas/routecont-bridge.schema";
-
 import response from "../../../../utils/response";
+import type { QueryParamsSchema } from "../../../schemas/query-params.schema";
 import queryParams from "../../../../utils/query-params";
-import BranchController from "../../../../applications/controllers/masters/branch.controller";
-import { branchValidation, type branchSchema } from "../../../schemas/masters/branch.schema";
+import type { RouteContBridgeSchema } from "../../../schemas/routecont-bridge.schema";
+import RoleMenuController from "../../../../applications/controllers/masters/role_menu.controller";
+import { roleMenuValidation, type roleMenuSchema } from "../../../schemas/masters/role_menu.schema";
 
 // define necessary global function or variables
 // such as router, repos, models, and controllers
 const router = Router();
-const branchController = new BranchController();
+const roleMenuController = new RoleMenuController();
 
-router.get("/", async (req: Request, res: Response) => {
+router.get("/:role_id", async (req: Request, res: Response) => {
     try {
         // get query parameters
         const params: QueryParamsSchema = queryParams(req.query);
 
         // call controller for list and count
-        const list: RouteContBridgeSchema = await branchController.getTable(params);
+        const list: RouteContBridgeSchema = await roleMenuController.getTable(req.params.role_id, params);
 
         // send to response
         return response(res, {
@@ -36,9 +34,9 @@ router.get("/", async (req: Request, res: Response) => {
     }
 });
 
-router.get("/:id", async (req: Request, res: Response) => {
+router.get("/:role_id/:id", async (req: Request, res: Response) => {
     try {
-        const result: RouteContBridgeSchema = await branchController.branchDetail(req.params.id);
+        const result: RouteContBridgeSchema = await roleMenuController.roleMenuDetail(req.params.id, req.params.role_id);
         let data: any = {
             code: 200,
             message: "Request success",
@@ -63,11 +61,11 @@ router.get("/:id", async (req: Request, res: Response) => {
     }
 });
 
-router.post("/", async (req: Request, res: Response) => {
+router.post("/:role_id", async (req: Request, res: Response) => {
     try {
         // validate payload-body
-        const body: branchSchema = req.body;
-        const { error } = branchValidation.validate(body);
+        const body: roleMenuSchema = { ...req.body, role_id: req.params.role_id };
+        const { error } = roleMenuValidation.validate(body);
         if (error) {
             return response(res, {
                 code: 400,
@@ -78,7 +76,7 @@ router.post("/", async (req: Request, res: Response) => {
         }
 
         // do create data
-        const result: RouteContBridgeSchema = await branchController.createBranch(body);
+        const result: RouteContBridgeSchema = await roleMenuController.createRoleMenu(body);
         if (!result.success) {
             return response(res, {
                 code: 400,
@@ -102,11 +100,11 @@ router.post("/", async (req: Request, res: Response) => {
     }
 });
 
-router.put("/:id", async (req: Request, res: Response) => {
+router.put("/:role_id/:id", async (req: Request, res: Response) => {
     try {
         // validate payload-body
-        const body: branchSchema = req.body;
-        const { error } = branchValidation.validate(body);
+        const body: roleMenuSchema = { ...req.body, role_id: req.params.role_id };
+        const { error } = roleMenuValidation.validate(body);
         if (error) {
             return response(res, {
                 code: 400,
@@ -117,7 +115,7 @@ router.put("/:id", async (req: Request, res: Response) => {
         }
 
         // check existing data
-        const data: RouteContBridgeSchema = await branchController.branchDetail(req.params.id);
+        const data: RouteContBridgeSchema = await roleMenuController.roleMenuDetail(req.params.id, req.params.role_id);
         if (!data.success) {
             return response(res, {
                 code: 404,
@@ -127,7 +125,7 @@ router.put("/:id", async (req: Request, res: Response) => {
         }
 
         // do update data
-        const result: RouteContBridgeSchema = await branchController.updateBranch(req.params.id, body);
+        const result: RouteContBridgeSchema = await roleMenuController.updateRoleMenu(req.params.id, body);
         if (!result.success) {
             return response(res, {
                 code: 400,
@@ -150,10 +148,10 @@ router.put("/:id", async (req: Request, res: Response) => {
     }
 });
 
-router.delete("/:id", async (req: Request, res: Response) => {
+router.delete("/:role_id/:id", async (req: Request, res: Response) => {
     try {
         // check existing data
-        const data: RouteContBridgeSchema = await branchController.branchDetail(req.params.id);
+        const data: RouteContBridgeSchema = await roleMenuController.roleMenuDetail(req.params.id, req.params.role_id);
         if (!data.success) {
             return response(res, {
                 code: 404,
@@ -167,7 +165,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
             deleted: true,
             updated_at: new Date()
         }
-        const result: RouteContBridgeSchema = await branchController.updateBranch(req.params.id, updated_data);
+        const result: RouteContBridgeSchema = await roleMenuController.updateRoleMenu(req.params.id, updated_data);
         if (!result.success) {
             return response(res, {
                 code: 400,

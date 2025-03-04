@@ -10,6 +10,8 @@ import authRoute from "./auth/auth.route";
 import roleRoute from "./masters/roles/role.route";
 import branchRoute from "./masters/branches/branch.route";
 import userRoute from "./masters/users/user.route";
+import menuRoute from "./masters/menus/menu.route";
+import roleMenuRoute from "./masters/role_menus/role_menu.route";
 
 // define necessary global function or variables
 const router = Router();
@@ -34,5 +36,7 @@ router.use("/auth", authRoute);
 router.use("/roles", verifyBearerToken, roleRoute);
 router.use("/branches", verifyBearerToken, branchRoute);
 router.use("/users", verifyBearerToken, userRoute);
+router.use("/menus", verifyBearerToken, menuRoute);
+router.use("/role_menus", verifyBearerToken, roleMenuRoute);
 
 export default router;

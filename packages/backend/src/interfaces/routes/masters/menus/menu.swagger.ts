@@ -1,11 +1,11 @@
 /**
  * @swagger
- * /users:
+ * /menus:
  *  get:
- *      summary: List user
+ *      summary: List menus
  *      tags:
- *          - Master - Users
- *      description: List of users available in database
+ *          - Master - Menus
+ *      description: List of menus available in database
  *      parameters:
  *          - name: page
  *            in: query
@@ -61,12 +61,14 @@
  *                                              properties:
  *                                                 id:
  *                                                      type: string
- *                                                 username:
+ *                                                 parent_id:
  *                                                      type: string
- *                                                 profiles:
- *                                                     type: object
- *                                                 roles:
- *                                                     type: object
+ *                                                 name:
+ *                                                      type: string
+ *                                                 label:
+ *                                                      type: string
+ *                                                 url:
+ *                                                      type: string
  *                                                 created_at:
  *                                                     type: string
  *          400:
@@ -75,19 +77,19 @@
 
 /**
  * @swagger
- * /users/{id}:
+ * /menus/{id}:
  *  get:
- *      summary: Detail user
+ *      summary: Detail menu
  *      tags:
- *          - Master - Users
- *      description: Detail of user selected, it will return user, user profile, user role, and user branch
+ *          - Master - Menus
+ *      description: Detail information of menu selected
  *      parameters:
  *          - name: id
  *            in: path
  *            required: true 
  *            schema:
  *              type: string
- *            description: id of user
+ *            description: id of menu
  *      responses:
  *          200:
  *              description: Request success
@@ -101,26 +103,34 @@
  *                              data:
  *                                  type: object
  *                                  properties:
- *                                      user:
- *                                          type: object
- *                                      user_profiles:
- *                                         type: object
- *                                      user_roles:
- *                                        type: object
- *                                      user_branches:
- *                                          type: object
+ *                                      id:
+ *                                          type: string
+ *                                      parent_id:
+ *                                         type: string
+ *                                      name:
+ *                                        type: string
+ *                                      label:
+ *                                          type: string
+ *                                      url:
+ *                                          type: string
+ *                                      icon:
+ *                                          type: string
+ *                                      created_at:
+ *                                          type: string
  *          400:
  *              description: Bad request
+ *          404:
+ *              description: Data is not found
  */
 
 /**
  * @swagger
- * /users:
+ * /menus:
  *  post:
- *    summary: Create User
- *    description: Create new user
+ *    summary: Create menu
+ *    description: Create new menu
  *    tags: 
- *      - Master - Users
+ *      - Master - Menus
  *    requestBody:
  *      required: true
  *      content:
@@ -128,37 +138,25 @@
  *              schema:
  *                  type: object
  *                  required:
- *                    - role_id
- *                    - branch_id
- *                    - username
- *                    - password
- *                    - fullname
+ *                    - name
+ *                    - label
+ *                    - url
  *                  properties:
- *                      role_id:
+ *                      parent_id:
  *                         type: string
- *                         example: uuid-of-role
- *                      branch_id:
+ *                         example: ID of existing menu as a parent
+ *                      name:
  *                         type: string
- *                         example: uuid-of-branch
- *                      username:
- *                         type: string
- *                         example: john
- *                      password:
- *                         type: string
- *                         example: 12345
- *                         format: password
- *                      fullname:
+ *                         example: dashboard
+ *                      label:
  *                        type: string
- *                        example: John Doe
- *                      email:
+ *                        example: Dashboard
+ *                      url:
  *                        type: string
- *                        example: jonhdoe@email.com
- *                      phone:
+ *                        example: /dashboard
+ *                      icon:
  *                        type: string
- *                        example: 0899712312
- *                      address:
- *                        type: string
- *                        example: Jl. Merpati Setia Makmur, Jatibening, Jakarta Timur
+ *                        example: fa fa-dashboard
  *    responses:
  *      201:
  *        description: Data is successfully created
@@ -168,79 +166,69 @@
 
 /**
  * @swagger
- * /users/{id}:
- *   put:
- *     summary: Update User
- *     description: Update an existing user
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         schema:
- *           type: string
- *         description: ID of the user
- *     tags:
- *       - Master - Users
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - role_id
- *               - branch_id
- *               - username
- *               - fullname
- *             properties:
- *               role_id:
- *                 type: string
- *                 example: uuid-of-role
- *               branch_id:
- *                 type: string
- *                 example: uuid-of-branch
- *               username:
- *                 type: string
- *                 example: john
- *               password:
- *                 type: string
- *                 example: 12345
- *                 format: password
- *               fullname:
- *                 type: string
- *                 example: John Doe
- *               email:
- *                 type: string
- *                 example: johndoe@email.com
- *               phone:
- *                 type: string
- *                 example: 0899712312
- *               address:
- *                 type: string
- *                 example: "-"
- *     responses:
- *       204:
- *         description: Data is successfully updated
- *       400:
- *         description: Bad request
+ * /menus/{id}:
+ *  put:
+ *    summary: Update Menu
+ *    description: Update existing menu
+ *    tags: 
+ *      - Master - Menus
+ *    parameters:
+ *          - name: id
+ *            in: path
+ *            required: true 
+ *            schema:
+ *              type: string
+ *            description: id of menu
+ *    requestBody:
+ *      required: true
+ *      content:
+ *          application/json:
+ *              schema:
+ *                  type: object
+ *                  required:
+ *                    - name
+ *                    - label
+ *                    - url
+ *                  properties:
+ *                      parent_id:
+ *                         type: string
+ *                         example: ID of menu as a parent
+ *                      name:
+ *                         type: string
+ *                         example: dashboard
+ *                      label:
+ *                        type: string
+ *                        example: Dashboard
+ *                      url:
+ *                        type: string
+ *                        example: /dashboard
+ *                      icon:
+ *                        type: string
+ *                        example: fa fa-dashboard
+ *    responses:
+ *      204:
+ *        description: Data is successfully updated
+ *      400:
+ *        description: Bad request
+ *      404:
+ *        description: Data is not found
  */
-
 
 /**
  * @swagger
- * /users/{id}:
+ * /menus/{id}:
  *  delete:
- *      summary: Delete user
+ *      summary: Delete menu
  *      tags:
- *          - Master - Users
- *      description: Delete user by id
+ *          - Master - Menus
+ *      description: Delete menu by id
  *      parameters:
  *          - name: id
  *            in: path
  *            required: true 
  *            schema:
  *              type: string
- *            description: id of user
+ *            description: id of menu
  *      responses:
  *          204:
  *              description: Data is successfully deleted

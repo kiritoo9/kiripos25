@@ -76,7 +76,7 @@ class UserRepository {
     }
 
     async getUserList(params: QueryParamsSchema) {
-        // prepare data order
+        // prepare data orderBy
         let order: [string, string] = ["created_at", "DESC"]; // default value
         if (params.order) {
             let _order = params.order.split(":");
