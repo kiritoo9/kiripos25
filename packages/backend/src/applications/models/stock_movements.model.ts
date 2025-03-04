@@ -11,6 +11,7 @@ import {
 } from "sequelize-typescript";
 import { v4 as uuidv4 } from "uuid";
 import Products from "./products.model";
+import Tenants from "./tenants.model";
 
 @Table({
     tableName: "stock_movements",
@@ -21,6 +22,10 @@ class StockMovements extends Model {
     @Default(uuidv4)
     @Column(DataType.UUID)
     declare id?: string;
+
+    @ForeignKey(() => Tenants)
+    @Column(DataType.UUID)
+    tenant_id!: string;
 
     @ForeignKey(() => Products)
     @Column(DataType.UUID)
@@ -58,6 +63,9 @@ class StockMovements extends Model {
     updated_at!: Date;
 
     // define an association
+    @BelongsTo(() => Tenants, { onDelete: "CASCADE" })
+    tenant?: Tenants;
+
     @BelongsTo(() => Products, { onDelete: "CASCADE" })
     product?: Products;
 }

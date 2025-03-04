@@ -5,8 +5,18 @@ import Roles from "../../../applications/models/roles.model";
  */
 const roles = [
     {
+        name: "superadmin",
+        description: "Super Admin",
+        created_at: new Date(),
+    },
+    {
         name: "admin",
-        description: "admin",
+        description: "Admin",
+        created_at: new Date(),
+    },
+    {
+        name: "staff",
+        description: "Staff of tenant",
         created_at: new Date(),
     }
 ];

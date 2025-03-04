@@ -4,9 +4,12 @@ import {
     PrimaryKey,
     Table,
     Column,
-    Default
+    Default,
+    ForeignKey,
+    BelongsTo
 } from "sequelize-typescript";
 import { v4 as uuidv4 } from "uuid";
+import Tenants from "./tenants.model";
 
 @Table({
     tableName: "vouchers",
@@ -17,6 +20,9 @@ class Vouchers extends Model {
     @Default(uuidv4)
     @Column(DataType.UUID)
     declare id?: string;
+
+    @ForeignKey(() => Tenants)
+    tenant_id!: string;
 
     @Column(DataType.STRING)
     name!: string;
@@ -52,6 +58,10 @@ class Vouchers extends Model {
 
     @Column(DataType.DATE)
     updated_at!: Date;
+
+    // define associations
+    @BelongsTo(() => Tenants, { onDelete: "CASCADE" })
+    tenant?: Tenants;
 }
 
 export default Vouchers;

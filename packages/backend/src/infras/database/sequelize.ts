@@ -26,16 +26,21 @@ import Orders from "../../applications/models/orders.model";
 import OrderItems from "../../applications/models/order_items.model";
 import OrderVouchers from "../../applications/models/order_vouchers.model";
 import Logs from "../../applications/models/logs.model";
+import Tenants from "../../applications/models/tenants.model";
+import TenantBills from "../../applications/models/tenant_bills.model";
+import UserTenants from "../../applications/models/user_tenants.model";
+import Packages from "../../applications/models/packages.model";
 
 const sequelize = new Sequelize(config);
 sequelize.addModels([
-    Roles, Users, Branches,
-    Menus, RoleMenus,
+    Roles, Users, Branches, UserTenants,
+    Menus, RoleMenus, Packages,
     UserProfiles, UserBranches, UserRoles,
     Customers, Vouchers, VoucherCodes,
     ProductCategories, Products,
     StockMovements, Purchases, PurchaseItems,
     Orders, OrderItems, OrderVouchers,
+    Tenants, TenantBills,
     Logs
 ]);
 

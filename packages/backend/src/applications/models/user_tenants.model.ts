@@ -1,38 +1,34 @@
 import {
     DataType,
-    Table,
-    PrimaryKey,
     Column,
-    Model,
-    Default,
+    Table,
     ForeignKey,
-    BelongsTo
+    PrimaryKey,
+    Model,
+    BelongsTo,
+    Default
 } from "sequelize-typescript";
 import { v4 as uuidv4 } from "uuid";
+import Users from "./users.model";
 import Tenants from "./tenants.model";
 
 @Table({
-    tableName: "tables",
+    tableName: "user_tenants",
     timestamps: false
 })
-class Tables extends Model {
+class UserTenants extends Model {
     @PrimaryKey
     @Default(uuidv4)
     @Column(DataType.UUID)
     declare id?: string;
 
+    @ForeignKey(() => Users)
+    @Column(DataType.UUID)
+    user_id!: string;
+
     @ForeignKey(() => Tenants)
     @Column(DataType.UUID)
     tenant_id!: string;
-
-    @Column(DataType.STRING)
-    table_no!: string;
-
-    @Column(DataType.INTEGER)
-    max_person!: number;
-
-    @Column(DataType.STRING)
-    remark!: string;
 
     @Default(false)
     @Column(DataType.BOOLEAN)
@@ -45,9 +41,12 @@ class Tables extends Model {
     @Column(DataType.DATE)
     updated_at!: Date;
 
-    // define associations
+    // define an association
+    @BelongsTo(() => Users, { onDelete: "CASCADE" })
+    user?: Users;
+
     @BelongsTo(() => Tenants, { onDelete: "CASCADE" })
     tenant?: Tenants;
 }
 
-export default Tables;
+export default UserTenants;

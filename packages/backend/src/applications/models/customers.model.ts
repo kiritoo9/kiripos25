@@ -1,12 +1,15 @@
 import {
+    BelongsTo,
     Column,
     DataType,
     Default,
+    ForeignKey,
     Model,
     PrimaryKey,
     Table
 } from "sequelize-typescript";
 import { v4 as uuidv4 } from "uuid";
+import Tenants from "./tenants.model";
 
 @Table({
     tableName: "customers",
@@ -17,6 +20,10 @@ class Customers extends Model {
     @Default(uuidv4)
     @Column(DataType.UUID)
     declare id?: string;
+
+    @ForeignKey(() => Tenants)
+    @Column(DataType.UUID)
+    tenant_id!: string;
 
     @Column(DataType.STRING)
     name!: string;
@@ -49,6 +56,10 @@ class Customers extends Model {
 
     @Column(DataType.DATE)
     updated_at!: Date;
+
+    // define associations
+    @BelongsTo(() => Tenants, { onDelete: "CASCADE" })
+    tenant?: Tenants;
 }
 
 export default Customers;
