@@ -1,6 +1,7 @@
 import Joi from "joi";
 
 interface userSchema {
+    tenant_id: string;
     role_id: string;
     branch_id: string;
     branch_head: boolean;
@@ -13,6 +14,7 @@ interface userSchema {
 }
 
 const userValidation = Joi.object({
+    tenant_id: Joi.string().required(),
     role_id: Joi.string().required(),
     branch_id: Joi.string().required(),
     branch_head: Joi.boolean().default(false),

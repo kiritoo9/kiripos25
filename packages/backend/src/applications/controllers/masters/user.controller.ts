@@ -2,23 +2,26 @@ import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
 
 import UserRepository from "../../repos/masters/user.repo";
+import TenantRepository from "../../repos/masters/tenant.repo";
 import RoleRepository from "../../repos/masters/role.repo";
 
 import type { DatatableSchema } from "../../../interfaces/schemas/datatable.schema";
 import type { QueryParamsSchema } from "../../../interfaces/schemas/query-params.schema";
 import type { RouteContBridgeSchema } from "../../../interfaces/schemas/routecont-bridge.schema";
 import type { userSchema } from "../../../interfaces/schemas/masters/user.schema";
+import type { UserPropertySchema } from "../../../interfaces/schemas/user-property.schema";
 import BranchRepository from "../../repos/masters/branch.repo";
 
 // load repositories
 const userRepo = new UserRepository();
+const tenantRepo = new TenantRepository();
 const roleRepo = new RoleRepository();
 const branchRepo = new BranchRepository
 
 class UserController {
 
-    async listUser(params: QueryParamsSchema): Promise<RouteContBridgeSchema> {
-        const data = await userRepo.getUserList(params);
+    async listUser(params: QueryParamsSchema, user_properties: UserPropertySchema | null = null): Promise<RouteContBridgeSchema> {
+        const data = await userRepo.getUserList(params, user_properties);
         let response: RouteContBridgeSchema = {
             success: true,
             data: {
@@ -50,6 +53,7 @@ class UserController {
         response.data = {
             user: user,
             user_profile: await userRepo.getUserProfile(id),
+            user_tenant: await userRepo.getUserTenant(id),
             user_role: await userRepo.getUserRole(id),
             user_branch: await userRepo.getUserBranch(id),
         }
@@ -67,6 +71,13 @@ class UserController {
         const username = await userRepo.getUserByUsername(body.username);
         if (username) {
             response.error = "Username is already exists";
+            return response;
+        }
+
+        // check existing tenant
+        const tenant = await tenantRepo.getTenantById(body.tenant_id);
+        if (tenant) {
+            response.error = "TenantID is not found, please check the data";
             return response;
         }
 
@@ -106,6 +117,11 @@ class UserController {
             address: body.address
         }
 
+        const user_tenant = {
+            user_id: user.id,
+            tenant_id: body.tenant_id
+        }
+
         const user_role = {
             user_id: user.id,
             role_id: body.role_id
@@ -121,6 +137,7 @@ class UserController {
             const result = await userRepo.createUserWithAttributes(
                 user,
                 user_profile,
+                user_tenant,
                 user_role,
                 user_branch
             )
@@ -160,6 +177,13 @@ class UserController {
             }
         }
 
+        // check existing tenant
+        const tenant = await tenantRepo.getTenantById(body.tenant_id);
+        if (tenant) {
+            response.error = "TenantID is not found, please check the data";
+            return response;
+        }
+
         // check existing role
         const role = await roleRepo.getRoleById(body.role_id);
         if (!role) {
@@ -192,6 +216,11 @@ class UserController {
             updated_at: new Date()
         }
 
+        const user_tenant = {
+            tenant_id: body.tenant_id,
+            updated_at: new Date()
+        }
+
         const user_role = {
             role_id: body.role_id,
             updated_at: new Date()
@@ -208,6 +237,7 @@ class UserController {
             const result = await userRepo.updateUserWithAttributes(
                 id,
                 user,
+                user_tenant,
                 user_profile,
                 user_role,
                 user_branch
@@ -250,6 +280,11 @@ class UserController {
             updated_at: today
         }
 
+        const user_tenant = {
+            deleted: true,
+            updated_at: today
+        }
+
         const user_role = {
             deleted: true,
             updated_at: today
@@ -266,6 +301,7 @@ class UserController {
                 id,
                 user,
                 user_profile,
+                user_tenant,
                 user_role,
                 user_branch
             );
@@ -280,7 +316,7 @@ class UserController {
         }
     }
 
-    async getTable(params: QueryParamsSchema): Promise<RouteContBridgeSchema> {
+    async getTable(params: QueryParamsSchema, user_properties: UserPropertySchema | null = null): Promise<RouteContBridgeSchema> {
         // define data
         let response: RouteContBridgeSchema = {
             success: true,
@@ -289,7 +325,7 @@ class UserController {
         }
 
         // perform to get list data
-        const listUser: RouteContBridgeSchema = await this.listUser(params);
+        const listUser: RouteContBridgeSchema = await this.listUser(params, user_properties);
         let datatable: DatatableSchema = {
             parameters: params,
             count: {

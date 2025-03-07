@@ -7,6 +7,7 @@ import verifyBearerToken from "../middlewares/verify";
 
 // import all routes available
 import authRoute from "./auth/auth.route";
+import tenantRoute from "./masters/tenants/tenant.route";
 import roleRoute from "./masters/roles/role.route";
 import branchRoute from "./masters/branches/branch.route";
 import userRoute from "./masters/users/user.route";
@@ -33,6 +34,7 @@ router.get("/", (_: Request, res: Response) => {
 router.use("/auth", authRoute);
 
 // define routes for master
+router.use("/tenants", verifyBearerToken, tenantRoute);
 router.use("/roles", verifyBearerToken, roleRoute);
 router.use("/branches", verifyBearerToken, branchRoute);
 router.use("/users", verifyBearerToken, userRoute);

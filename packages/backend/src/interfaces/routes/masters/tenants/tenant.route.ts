@@ -1,17 +1,17 @@
 import { Router, type Request, type Response } from "express";
 import type { QueryParamsSchema } from "../../../schemas/query-params.schema";
+
 import type { RouteContBridgeSchema } from "../../../schemas/routecont-bridge.schema";
 
 import response from "../../../../utils/response";
 import queryParams from "../../../../utils/query-params";
-import UserController from "../../../../applications/controllers/masters/user.controller";
-import { userValidation, type userSchema } from "../../../schemas/masters/user.schema";
-import type { LoggedRequest, UserPropertySchema } from "../../../schemas/user-property.schema";
+import TenantController from "../../../../applications/controllers/masters/tenant.controller";
+import { tenantValidation, type tenantSchema } from "../../../schemas/masters/tenant.schema";
 
 // define necessary global function or variables
 // such as router, repos, models, and controllers
 const router = Router();
-const userController = new UserController();
+const tenantController = new TenantController();
 
 router.get("/", async (req: Request, res: Response) => {
     try {
@@ -19,9 +19,7 @@ router.get("/", async (req: Request, res: Response) => {
         const params: QueryParamsSchema = queryParams(req.query);
 
         // call controller for list and count
-        const user_properties: UserPropertySchema = (req as LoggedRequest).user_properties; // this data from logged token
-        console.log(user_properties)
-        const list: RouteContBridgeSchema = await userController.getTable(params, user_properties);
+        const list: RouteContBridgeSchema = await tenantController.getTable(params);
 
         // send to response
         return response(res, {
@@ -40,7 +38,7 @@ router.get("/", async (req: Request, res: Response) => {
 
 router.get("/:id", async (req: Request, res: Response) => {
     try {
-        const result = await userController.userDetail(req.params.id);
+        const result: RouteContBridgeSchema = await tenantController.tenantDetail(req.params.id);
         let data: any = {
             code: 200,
             message: "Request success",
@@ -53,7 +51,7 @@ router.get("/:id", async (req: Request, res: Response) => {
             return response(res, data);
         }
 
-        // success condition
+        // success response
         data.data = result.data;
         return response(res, data);
     } catch (error: any) {
@@ -68,18 +66,19 @@ router.get("/:id", async (req: Request, res: Response) => {
 router.post("/", async (req: Request, res: Response) => {
     try {
         // validate payload-body
-        const body: userSchema = req.body;
-        const { error } = userValidation.validate(body);
+        const body: tenantSchema = req.body;
+        const { error } = tenantValidation.validate(body);
         if (error) {
             return response(res, {
                 code: 400,
-                message: "Error payload body format",
+                message: "Error payload format",
+                data: body,
                 error: error
             });
         }
 
-        // perform to create user
-        const result: RouteContBridgeSchema = await userController.createUser(body);
+        // do create data
+        const result: RouteContBridgeSchema = await tenantController.createTenant(body);
         if (!result.success) {
             return response(res, {
                 code: 400,
@@ -88,7 +87,7 @@ router.post("/", async (req: Request, res: Response) => {
             });
         }
 
-        // success condition
+        // success response
         return response(res, {
             code: 201,
             message: "Data is successfully created",
@@ -106,30 +105,41 @@ router.post("/", async (req: Request, res: Response) => {
 router.put("/:id", async (req: Request, res: Response) => {
     try {
         // validate payload-body
-        const body: userSchema = req.body;
-        const { error } = userValidation.validate(body);
+        const body: tenantSchema = req.body;
+        const { error } = tenantValidation.validate(body);
         if (error) {
             return response(res, {
                 code: 400,
-                message: "Error payload body format",
+                message: "Error payload format",
+                data: body,
                 error: error
             });
         }
 
-        // perform to update user
-        const result: RouteContBridgeSchema = await userController.updateUser(req.params.id, body);
+        // check existing data
+        const data: RouteContBridgeSchema = await tenantController.tenantDetail(req.params.id);
+        if (!data.success) {
+            return response(res, {
+                code: 404,
+                message: "Request failure",
+                error: data.error
+            });
+        }
+
+        // do update data
+        const result: RouteContBridgeSchema = await tenantController.updateTenant(req.params.id, body);
         if (!result.success) {
             return response(res, {
-                code: result?.code === undefined ? 400 : result.code, // handle multiple error code
+                code: 400,
                 message: "Something went wrong",
                 error: result.error
             });
         }
 
-        // success condition
+        // success response
         return response(res, {
             code: 204,
-            message: "Data is successfully updated"
+            message: "Data is succssfully updated"
         });
     } catch (error: any) {
         return response(res, {
@@ -142,7 +152,22 @@ router.put("/:id", async (req: Request, res: Response) => {
 
 router.delete("/:id", async (req: Request, res: Response) => {
     try {
-        const result: RouteContBridgeSchema = await userController.deleteUser(req.params.id);
+        // check existing data
+        const data: RouteContBridgeSchema = await tenantController.tenantDetail(req.params.id);
+        if (!data.success) {
+            return response(res, {
+                code: 404,
+                message: "Request failure",
+                error: data.error
+            });
+        }
+
+        // do (soft)delete data
+        const updated_data = {
+            deleted: true,
+            updated_at: new Date()
+        }
+        const result: RouteContBridgeSchema = await tenantController.updateTenant(req.params.id, updated_data);
         if (!result.success) {
             return response(res, {
                 code: 400,
@@ -151,10 +176,10 @@ router.delete("/:id", async (req: Request, res: Response) => {
             });
         }
 
-        // success condition
+        // success response
         return response(res, {
             code: 204,
-            message: "Data is succesfully deleted"
+            message: "Data is succssfully deleted"
         });
     } catch (error: any) {
         return response(res, {

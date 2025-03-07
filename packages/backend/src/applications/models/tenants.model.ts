@@ -51,6 +51,10 @@ class Tenants extends Model {
     @Column(DataType.STRING)
     banner?: string;
 
+    @Default(false)
+    @Column(DataType.BOOLEAN)
+    deleted!: boolean;
+
     @Default(new Date())
     @Column(DataType.DATE)
     created_at?: Date;

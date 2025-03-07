@@ -9,7 +9,10 @@ class RoleRepository {
         return await Roles.findOne({
             attributes: ["id", "name", "description", "created_at"],
             where: {
-                id: id
+                id: id,
+                name: {
+                    [Op.not]: "superadmin" // avoid superadmin role in frontend, user can't choose this role
+                }
             }
         });
     }
@@ -28,6 +31,9 @@ class RoleRepository {
         return await Roles.findAndCountAll({
             attributes: ["id", "name", "description", "created_at"],
             where: {
+                name: {
+                    [Op.not]: "superadmin" // avoid superadmin role in frontend, user can't choose this role
+                },
                 [Op.or]: [
                     {
                         name: {

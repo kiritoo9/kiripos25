@@ -28,6 +28,7 @@ const swaggerOptions = {
         tags: [
             { name: "Welcome", description: "Welcome page for server test" },
             { name: "Auth", description: "Authentication" },
+            { name: "Master - Tenants", description: "Data master of tenants" },
             { name: "Master - Roles", description: "Data master of roles" },
             { name: "Master - Branches", description: "Data master of branches" },
             { name: "Master - Users", description: "Data master of users" },

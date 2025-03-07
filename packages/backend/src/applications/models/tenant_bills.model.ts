@@ -45,20 +45,24 @@ class TenantBills extends Model {
     total_price!: number;
 
     @Column(DataType.DATE)
-    start_date?: Date;
+    start_date!: Date;
 
     @Column(DataType.DATE)
-    end_date?: Date;
+    end_date!: Date;
 
     @Column(DataType.DATE)
-    bill_date?: Date;
+    bill_date!: Date;
 
     @Comment("S1=pending,S2=paid,S3=expired")
     @Column(DataType.STRING)
-    status?: string;
+    status!: string;
 
     @Column(DataType.STRING)
     remark?: string;
+
+    @Default(false)
+    @Column(DataType.BOOLEAN)
+    deleted!: boolean;
 
     @Default(new Date())
     @Column(DataType.DATE)
