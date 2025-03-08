@@ -1,9 +1,10 @@
-import { Router, type Request, type Response } from "express";
+import { Router, type Request, type Response, type NextFunction } from "express";
 
 import type { IoResponseSchema } from "../schemas/io-response.schema";
 import response from "../../utils/response";
 import ENV from "../../infras/environ";
 import verifyBearerToken from "../middlewares/verify";
+import privateRoute from "../middlewares/private";
 
 // import all routes available
 import authRoute from "./auth/auth.route";
@@ -16,6 +17,12 @@ import roleMenuRoute from "./masters/role_menus/role_menu.route";
 
 // define necessary global function or variables
 const router = Router();
+const asyncHandler = (fn: Function) => (req: Request, res: Response, next: NextFunction) => {
+    // this function will handle promise response from middleware
+    // default response must be <void>
+    // since using async-await, the response changed into Promise<void> so this handler is required
+    Promise.resolve(fn(req, res, next)).catch(next);
+};
 
 // welcome route
 router.get("/", (_: Request, res: Response) => {
@@ -34,11 +41,11 @@ router.get("/", (_: Request, res: Response) => {
 router.use("/auth", authRoute);
 
 // define routes for master
-router.use("/tenants", verifyBearerToken, tenantRoute);
-router.use("/roles", verifyBearerToken, roleRoute);
-router.use("/branches", verifyBearerToken, branchRoute);
-router.use("/users", verifyBearerToken, userRoute);
-router.use("/menus", verifyBearerToken, menuRoute);
-router.use("/role_menus", verifyBearerToken, roleMenuRoute);
+router.use("/tenants", asyncHandler(verifyBearerToken), privateRoute, tenantRoute);
+router.use("/roles", asyncHandler(verifyBearerToken), roleRoute);
+router.use("/branches", asyncHandler(verifyBearerToken), branchRoute);
+router.use("/users", asyncHandler(verifyBearerToken), userRoute);
+router.use("/menus", asyncHandler(verifyBearerToken), menuRoute);
+router.use("/role_menus", asyncHandler(verifyBearerToken), roleMenuRoute);
 
 export default router;

@@ -1,11 +1,11 @@
-import type { Request, Response, NextFunction } from 'express';
-import { decode, verify } from 'jsonwebtoken';
+import type { Response, NextFunction } from 'express';
+import { verify } from 'jsonwebtoken';
 import UserRepository from '../../applications/repos/masters/user.repo';
 
 import ENV from '../../infras/environ';
 import type { LoggedRequest } from '../schemas/user-property.schema';
 
-const verifyBearerToken = async (req: LoggedRequest, res: Response, next: NextFunction) => {
+const verifyBearerToken = async (req: LoggedRequest, res: Response, next: NextFunction): Promise<void> => {
     const authHeader = req.headers['authorization'];
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         res.status(401).json({ message: "Missing authorization header" });
