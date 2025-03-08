@@ -7,7 +7,8 @@ import {
     Column,
     Default,
     Model,
-    Comment
+    Comment,
+    Unique
 } from "sequelize-typescript";
 import { v4 as uuidv4 } from "uuid";
 import ProductCategories from "./product_categories.model";
@@ -30,6 +31,10 @@ class Products extends Model {
     @ForeignKey(() => ProductCategories)
     @Column(DataType.UUID)
     category_id!: string;
+
+    @Unique
+    @Column(DataType.STRING)
+    code!: string;
 
     @Column(DataType.STRING)
     name!: string;

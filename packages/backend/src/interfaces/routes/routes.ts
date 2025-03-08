@@ -14,6 +14,10 @@ import branchRoute from "./masters/branches/branch.route";
 import userRoute from "./masters/users/user.route";
 import menuRoute from "./masters/menus/menu.route";
 import roleMenuRoute from "./masters/role_menus/role_menu.route";
+import tableRoute from "./masters/tables/table.route";
+import customerRoute from "./masters/customers/customer.route";
+import productCategoryRoute from "./masters/product_categories/product_category.route";
+import productRoute from "./masters/products/product.route";
 
 // define necessary global function or variables
 const router = Router();
@@ -47,5 +51,9 @@ router.use("/branches", asyncHandler(verifyBearerToken), branchRoute);
 router.use("/users", asyncHandler(verifyBearerToken), userRoute);
 router.use("/menus", asyncHandler(verifyBearerToken), menuRoute);
 router.use("/role_menus", asyncHandler(verifyBearerToken), roleMenuRoute);
+router.use("/tables", asyncHandler(verifyBearerToken), tableRoute);
+router.use("/customers", asyncHandler(verifyBearerToken), customerRoute);
+router.use("/product_categories", asyncHandler(verifyBearerToken), productCategoryRoute);
+router.use("/products", asyncHandler(verifyBearerToken), productRoute);
 
 export default router;

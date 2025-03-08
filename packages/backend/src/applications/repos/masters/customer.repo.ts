@@ -1,15 +1,15 @@
 import { Op } from "sequelize";
 import type { QueryParamsSchema } from "../../../interfaces/schemas/query-params.schema";
 
-import Branches from "../../models/branches.model";
+import Customers from "../../models/customers.model";
 import Tenants from "../../models/tenants.model";
-import type { branchSchema } from "../../../interfaces/schemas/masters/branch.schema";
+import type { customerSchema } from "../../../interfaces/schemas/masters/customer.schema";
 import type { UserPropertySchema } from "../../../interfaces/schemas/user-property.schema";
 
-class BranchRepository {
+class CustomerRepository {
     KEY_ROLE: string = "superadmin";
 
-    async getBranchById(id: string, user_properties: UserPropertySchema) {
+    async getCustomerById(id: string, user_properties: UserPropertySchema) {
         // define conditions
         let base_conditions: { [key: string]: any } = {
             deleted: false,
@@ -24,8 +24,8 @@ class BranchRepository {
         }
 
         // perform to query
-        return await Branches.findOne({
-            attributes: ["id", "name", "phone", "address", "remark", "created_at"],
+        return await Customers.findOne({
+            attributes: ["id", "name", "phone", "email", "address", "gender", "range_of_age", "remark", "created_at"],
             where: base_conditions,
             include: [
                 {
@@ -36,7 +36,7 @@ class BranchRepository {
         });
     }
 
-    async getBranchList(params: QueryParamsSchema, user_properties: UserPropertySchema) {
+    async getCustomerList(params: QueryParamsSchema, user_properties: UserPropertySchema) {
         // prepare data orderBy
         let order: [string, string] = ["created_at", "DESC"]; // default value
         if (params.order) {
@@ -57,8 +57,8 @@ class BranchRepository {
         }
 
         // perform to query
-        return await Branches.findAndCountAll({
-            attributes: ["id", "name", "phone", "address", "remark", "created_at"],
+        return await Customers.findAndCountAll({
+            attributes: ["id", "name", "phone", "email", "address", "remark", "created_at"],
             where: {
                 [Op.and]: [
                     base_conditions,
@@ -75,12 +75,12 @@ class BranchRepository {
                                 }
                             },
                             {
-                                address: {
+                                email: {
                                     [Op.iLike]: `%${params?.search}%`
                                 }
                             },
                             {
-                                remark: {
+                                address: {
                                     [Op.iLike]: `%${params?.search}%`
                                 }
                             }
@@ -100,12 +100,12 @@ class BranchRepository {
         });
     }
 
-    async createBranch(data: branchSchema) {
-        return await Branches.create({ ...data });
+    async createCustomer(data: customerSchema) {
+        return await Customers.create({ ...data });
     }
 
-    async updateBranch(id: string, data: branchSchema | { [key: string]: any }) {
-        return await Branches.update({
+    async updateCustomer(id: string, data: customerSchema | { [key: string]: any }) {
+        return await Customers.update({
             ...data,
             updated_at: new Date()
         }, {
@@ -115,4 +115,4 @@ class BranchRepository {
 
 }
 
-export default BranchRepository;
+export default CustomerRepository;

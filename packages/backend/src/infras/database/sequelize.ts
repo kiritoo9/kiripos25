@@ -30,6 +30,7 @@ import Tenants from "../../applications/models/tenants.model";
 import TenantBills from "../../applications/models/tenant_bills.model";
 import UserTenants from "../../applications/models/user_tenants.model";
 import Packages from "../../applications/models/packages.model";
+import Tables from "../../applications/models/tables.model";
 
 const sequelize = new Sequelize(config);
 sequelize.addModels([
@@ -41,7 +42,7 @@ sequelize.addModels([
     StockMovements, Purchases, PurchaseItems,
     Orders, OrderItems, OrderVouchers,
     Tenants, TenantBills,
-    Logs
+    Logs, Tables
 ]);
 
 /**

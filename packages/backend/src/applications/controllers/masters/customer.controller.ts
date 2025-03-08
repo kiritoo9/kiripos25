@@ -1,18 +1,18 @@
-import BranchRepository from "../../repos/masters/branch.repo";
+import CustomerRepository from "../../repos/masters/customer.repo";
 
 import type { DatatableSchema } from "../../../interfaces/schemas/datatable.schema";
 import type { QueryParamsSchema } from "../../../interfaces/schemas/query-params.schema";
 import type { RouteContBridgeSchema } from "../../../interfaces/schemas/routecont-bridge.schema";
-import type { branchSchema } from "../../../interfaces/schemas/masters/branch.schema";
+import type { customerSchema } from "../../../interfaces/schemas/masters/customer.schema";
 import type { UserPropertySchema } from "../../../interfaces/schemas/user-property.schema";
 
-const branchRepo = new BranchRepository();
+const customerRepo = new CustomerRepository();
 
-class BranchController {
+class CustomerController {
     KEY_ROLE: string = "superadmin";
 
-    async listBranch(params: QueryParamsSchema, user_properties: UserPropertySchema): Promise<RouteContBridgeSchema> {
-        const data = await branchRepo.getBranchList(params, user_properties);
+    async listCustomer(params: QueryParamsSchema, user_properties: UserPropertySchema): Promise<RouteContBridgeSchema> {
+        const data = await customerRepo.getCustomerList(params, user_properties);
         let response: RouteContBridgeSchema = {
             success: true,
             data: {
@@ -25,7 +25,7 @@ class BranchController {
         return response;
     }
 
-    async branchDetail(id: string, user_properties: UserPropertySchema): Promise<RouteContBridgeSchema> {
+    async customerDetail(id: string, user_properties: UserPropertySchema): Promise<RouteContBridgeSchema> {
         let response: RouteContBridgeSchema = {
             success: false,
             data: null,
@@ -33,15 +33,15 @@ class BranchController {
         }
 
         // check if data not found
-        let branch = await branchRepo.getBranchById(id, user_properties);
-        if (!branch) {
-            response.error = "Branch not found";
+        let data = await customerRepo.getCustomerById(id, user_properties);
+        if (!data) {
+            response.error = "Data not found";
             return response;
         }
 
         // set response
         response.success = true;
-        response.data = branch;
+        response.data = data;
         return response;
     }
 
@@ -54,14 +54,14 @@ class BranchController {
         }
 
         // perform to get list data
-        const listBranch: RouteContBridgeSchema = await this.listBranch(params, user_properties);
+        const list: RouteContBridgeSchema = await this.listCustomer(params, user_properties);
         let datatable: DatatableSchema = {
             parameters: params,
             count: {
-                total_page: listBranch.data.total_page,
-                total_data: listBranch.data.total_data,
+                total_page: list.data.total_page,
+                total_data: list.data.total_data,
             },
-            data: listBranch.data
+            data: list.data
         }
 
         // set response
@@ -69,7 +69,7 @@ class BranchController {
         return response;
     }
 
-    async createBranch(body: branchSchema, user_properties: UserPropertySchema): Promise<RouteContBridgeSchema> {
+    async createCustomer(body: customerSchema, user_properties: UserPropertySchema): Promise<RouteContBridgeSchema> {
         let response: RouteContBridgeSchema = {
             success: false,
             data: [],
@@ -93,7 +93,7 @@ class BranchController {
         }
 
         try {
-            const result = await branchRepo.createBranch(body);
+            const result = await customerRepo.createCustomer(body);
             response.success = true;
             response.data = result;
             return response;
@@ -104,7 +104,7 @@ class BranchController {
 
     }
 
-    async updateBranch(id: string, body: branchSchema | { [key: string]: any }, user_properties: UserPropertySchema): Promise<RouteContBridgeSchema> {
+    async updateCustomer(id: string, body: customerSchema | { [key: string]: any }, user_properties: UserPropertySchema): Promise<RouteContBridgeSchema> {
         let response: RouteContBridgeSchema = {
             success: false,
             data: [],
@@ -128,7 +128,7 @@ class BranchController {
         }
 
         try {
-            const result = await branchRepo.updateBranch(id, body);
+            const result = await customerRepo.updateCustomer(id, body);
             response.success = true;
             response.data = result;
             return response;
@@ -140,4 +140,4 @@ class BranchController {
 
 }
 
-export default BranchController;
+export default CustomerController;

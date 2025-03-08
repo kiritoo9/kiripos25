@@ -16,6 +16,9 @@ interface environ {
 
     // secret key
     SECRET_KEY: string;
+
+    // serving file
+    CDN_FILE: string;
 }
 
 const ENV: environ = {
@@ -30,5 +33,7 @@ const ENV: environ = {
     DB_PORT: process.env.DB_PORT ?? 5050, // default pgsql port
 
     SECRET_KEY: process.env.SECRET_KEY ?? "1234567890",
+
+    CDN_FILE: process.env.CDN_FILE ?? "http://0.0.0.0:5000/cdn",
 }
 export default ENV;

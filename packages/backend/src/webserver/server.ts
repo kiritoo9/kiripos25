@@ -2,6 +2,7 @@ import express from 'express';
 import { serve, setup } from "swagger-ui-express";
 import swaggerJSDoc from 'swagger-jsdoc';
 import cors from 'cors';
+import path from "path";
 
 import ENV from '../infras/environ';
 import { ensureConnection } from '../infras/database/sequelize';
@@ -9,8 +10,11 @@ import router from '../interfaces/routes/routes';
 
 const app = express();
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "2mb" }));
+app.use(express.urlencoded({ extended: true, limit: "2mb" }));
+
+// serve static file
+app.use("/cdn", express.static(path.join(process.cwd(), "cdn")));
 
 // initiate swagger docs
 const swaggerOptions = {
@@ -34,6 +38,9 @@ const swaggerOptions = {
             { name: "Master - Users", description: "Data master of users" },
             { name: "Master - Menus", description: "Data master of menus" },
             { name: "Master - Role Menus", description: "List of menus each roles" },
+            { name: "Master - Tables", description: "List of tables available" },
+            { name: "Master - Product Categories", description: "List of product categories available" },
+            { name: "Master - Products", description: "List of product available" },
         ],
         servers: [
             {

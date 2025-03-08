@@ -1,15 +1,15 @@
 import { Op } from "sequelize";
 import type { QueryParamsSchema } from "../../../interfaces/schemas/query-params.schema";
 
-import Branches from "../../models/branches.model";
+import Tables from "../../models/tables.model";
 import Tenants from "../../models/tenants.model";
-import type { branchSchema } from "../../../interfaces/schemas/masters/branch.schema";
+import type { tableSchema } from "../../../interfaces/schemas/masters/table.schema";
 import type { UserPropertySchema } from "../../../interfaces/schemas/user-property.schema";
 
-class BranchRepository {
+class TableRepository {
     KEY_ROLE: string = "superadmin";
 
-    async getBranchById(id: string, user_properties: UserPropertySchema) {
+    async getTableById(id: string, user_properties: UserPropertySchema) {
         // define conditions
         let base_conditions: { [key: string]: any } = {
             deleted: false,
@@ -24,8 +24,8 @@ class BranchRepository {
         }
 
         // perform to query
-        return await Branches.findOne({
-            attributes: ["id", "name", "phone", "address", "remark", "created_at"],
+        return await Tables.findOne({
+            attributes: ["id", "table_no", "max_person", "remark", "created_at"],
             where: base_conditions,
             include: [
                 {
@@ -36,7 +36,7 @@ class BranchRepository {
         });
     }
 
-    async getBranchList(params: QueryParamsSchema, user_properties: UserPropertySchema) {
+    async getTableList(params: QueryParamsSchema, user_properties: UserPropertySchema) {
         // prepare data orderBy
         let order: [string, string] = ["created_at", "DESC"]; // default value
         if (params.order) {
@@ -57,25 +57,15 @@ class BranchRepository {
         }
 
         // perform to query
-        return await Branches.findAndCountAll({
-            attributes: ["id", "name", "phone", "address", "remark", "created_at"],
+        return await Tables.findAndCountAll({
+            attributes: ["id", "table_no", "max_person", "remark", "created_at"],
             where: {
                 [Op.and]: [
                     base_conditions,
                     {
                         [Op.or]: [
                             {
-                                name: {
-                                    [Op.iLike]: `%${params?.search}%`
-                                }
-                            },
-                            {
-                                phone: {
-                                    [Op.iLike]: `%${params?.search}%`
-                                }
-                            },
-                            {
-                                address: {
+                                table_no: {
                                     [Op.iLike]: `%${params?.search}%`
                                 }
                             },
@@ -100,12 +90,12 @@ class BranchRepository {
         });
     }
 
-    async createBranch(data: branchSchema) {
-        return await Branches.create({ ...data });
+    async createTable(data: tableSchema) {
+        return await Tables.create({ ...data });
     }
 
-    async updateBranch(id: string, data: branchSchema | { [key: string]: any }) {
-        return await Branches.update({
+    async updateTable(id: string, data: tableSchema | { [key: string]: any }) {
+        return await Tables.update({
             ...data,
             updated_at: new Date()
         }, {
@@ -115,4 +105,4 @@ class BranchRepository {
 
 }
 
-export default BranchRepository;
+export default TableRepository;

@@ -1,15 +1,15 @@
 import { Op } from "sequelize";
 import type { QueryParamsSchema } from "../../../interfaces/schemas/query-params.schema";
 
-import Branches from "../../models/branches.model";
+import ProductCategories from "../../models/product_categories.model";
 import Tenants from "../../models/tenants.model";
-import type { branchSchema } from "../../../interfaces/schemas/masters/branch.schema";
+import type { productCategorySchema } from "../../../interfaces/schemas/masters/product_category.schema";
 import type { UserPropertySchema } from "../../../interfaces/schemas/user-property.schema";
 
-class BranchRepository {
+class ProductCategoryRepository {
     KEY_ROLE: string = "superadmin";
 
-    async getBranchById(id: string, user_properties: UserPropertySchema) {
+    async getProductCategoryById(id: string, user_properties: UserPropertySchema) {
         // define conditions
         let base_conditions: { [key: string]: any } = {
             deleted: false,
@@ -24,8 +24,8 @@ class BranchRepository {
         }
 
         // perform to query
-        return await Branches.findOne({
-            attributes: ["id", "name", "phone", "address", "remark", "created_at"],
+        return await ProductCategories.findOne({
+            attributes: ["id", "name", "description", "icon", "created_at"],
             where: base_conditions,
             include: [
                 {
@@ -36,7 +36,7 @@ class BranchRepository {
         });
     }
 
-    async getBranchList(params: QueryParamsSchema, user_properties: UserPropertySchema) {
+    async getProductCategoryList(params: QueryParamsSchema, user_properties: UserPropertySchema) {
         // prepare data orderBy
         let order: [string, string] = ["created_at", "DESC"]; // default value
         if (params.order) {
@@ -57,8 +57,8 @@ class BranchRepository {
         }
 
         // perform to query
-        return await Branches.findAndCountAll({
-            attributes: ["id", "name", "phone", "address", "remark", "created_at"],
+        return await ProductCategories.findAndCountAll({
+            attributes: ["id", "name", "description", "icon", "created_at"],
             where: {
                 [Op.and]: [
                     base_conditions,
@@ -70,17 +70,7 @@ class BranchRepository {
                                 }
                             },
                             {
-                                phone: {
-                                    [Op.iLike]: `%${params?.search}%`
-                                }
-                            },
-                            {
-                                address: {
-                                    [Op.iLike]: `%${params?.search}%`
-                                }
-                            },
-                            {
-                                remark: {
+                                description: {
                                     [Op.iLike]: `%${params?.search}%`
                                 }
                             }
@@ -100,12 +90,12 @@ class BranchRepository {
         });
     }
 
-    async createBranch(data: branchSchema) {
-        return await Branches.create({ ...data });
+    async createProductCategory(data: productCategorySchema) {
+        return await ProductCategories.create({ ...data });
     }
 
-    async updateBranch(id: string, data: branchSchema | { [key: string]: any }) {
-        return await Branches.update({
+    async updateProductCategory(id: string, data: productCategorySchema | { [key: string]: any }) {
+        return await ProductCategories.update({
             ...data,
             updated_at: new Date()
         }, {
@@ -115,4 +105,4 @@ class BranchRepository {
 
 }
 
-export default BranchRepository;
+export default ProductCategoryRepository;
