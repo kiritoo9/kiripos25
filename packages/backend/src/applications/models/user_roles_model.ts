@@ -43,10 +43,10 @@ class UserRoles extends Model {
 
     // define an association
     @BelongsTo(() => Users, { onDelete: "CASCADE" })
-    users?: Users;
+    user?: Users;
 
     @BelongsTo(() => Roles, { onDelete: "CASCADE" })
-    roles?: Roles;
+    role?: Roles;
 }
 
 export default UserRoles;

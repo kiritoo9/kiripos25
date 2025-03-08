@@ -61,6 +61,8 @@
  *                                              properties:
  *                                                 id:
  *                                                      type: string
+ *                                                 tenant_id:
+ *                                                      type: string
  *                                                 name:
  *                                                      type: string
  *                                                 phone:
@@ -71,6 +73,8 @@
  *                                                      type: string
  *                                                 created_at:
  *                                                     type: string
+ *                                                 tenants:
+ *                                                     type: object
  *          400:
  *              description: Bad request
  */
@@ -105,6 +109,8 @@
  *                                  properties:
  *                                      id:
  *                                          type: string
+ *                                      tenant_id:
+ *                                          type: string
  *                                      name:
  *                                         type: string
  *                                      phone:
@@ -115,6 +121,8 @@
  *                                          type: string
  *                                      created_at:
  *                                          type: string
+ *                                      tenant:
+ *                                          type: object
  *          400:
  *              description: Bad request
  *          404:
@@ -138,6 +146,9 @@
  *                  required:
  *                    - name
  *                  properties:
+ *                      tenant_id:
+ *                         type: string
+ *                         example: ID of tenant
  *                      name:
  *                         type: string
  *                         example: Branch Sample
@@ -181,6 +192,9 @@
  *                  required:
  *                    - name
  *                  properties:
+ *                      tenant_id:
+ *                         type: string
+ *                         example: ID of tenant
  *                      name:
  *                         type: string
  *                         example: Branch Sample

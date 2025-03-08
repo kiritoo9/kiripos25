@@ -33,9 +33,9 @@ import Packages from "../../applications/models/packages.model";
 
 const sequelize = new Sequelize(config);
 sequelize.addModels([
-    Roles, Users, Branches, UserTenants,
+    Roles, Users, Branches,
     Menus, RoleMenus, Packages,
-    UserProfiles, UserBranches, UserRoles,
+    UserProfiles, UserBranches, UserRoles, UserTenants,
     Customers, Vouchers, VoucherCodes,
     ProductCategories, Products,
     StockMovements, Purchases, PurchaseItems,
@@ -53,6 +53,8 @@ sequelize.addModels([
  */
 Users.hasOne(UserProfiles, { foreignKey: "user_id" });
 Users.hasOne(UserRoles, { foreignKey: "user_id" });
+Users.hasOne(UserTenants, { foreignKey: "user_id" });
+Users.hasOne(UserBranches, { foreignKey: "user_id" });
 
 export default sequelize;
 

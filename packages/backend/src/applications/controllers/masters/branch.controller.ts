@@ -4,13 +4,15 @@ import type { DatatableSchema } from "../../../interfaces/schemas/datatable.sche
 import type { QueryParamsSchema } from "../../../interfaces/schemas/query-params.schema";
 import type { RouteContBridgeSchema } from "../../../interfaces/schemas/routecont-bridge.schema";
 import type { branchSchema } from "../../../interfaces/schemas/masters/branch.schema";
+import type { UserPropertySchema } from "../../../interfaces/schemas/user-property.schema";
 
 const branchRepo = new BranchRepository();
 
 class BranchController {
+    KEY_ROLE: string = "superadmin";
 
-    async listBranch(params: QueryParamsSchema): Promise<RouteContBridgeSchema> {
-        const data = await branchRepo.getBranchList(params);
+    async listBranch(params: QueryParamsSchema, user_properties: UserPropertySchema): Promise<RouteContBridgeSchema> {
+        const data = await branchRepo.getBranchList(params, user_properties);
         let response: RouteContBridgeSchema = {
             success: true,
             data: {
@@ -23,7 +25,7 @@ class BranchController {
         return response;
     }
 
-    async branchDetail(id: string): Promise<RouteContBridgeSchema> {
+    async branchDetail(id: string, user_properties: UserPropertySchema): Promise<RouteContBridgeSchema> {
         let response: RouteContBridgeSchema = {
             success: false,
             data: null,
@@ -31,7 +33,7 @@ class BranchController {
         }
 
         // check if data not found
-        let branch = await branchRepo.getBranchById(id);
+        let branch = await branchRepo.getBranchById(id, user_properties);
         if (!branch) {
             response.error = "Branch not found";
             return response;
@@ -43,7 +45,7 @@ class BranchController {
         return response;
     }
 
-    async getTable(params: QueryParamsSchema): Promise<RouteContBridgeSchema> {
+    async getTable(params: QueryParamsSchema, user_properties: UserPropertySchema): Promise<RouteContBridgeSchema> {
         // define data
         let response: RouteContBridgeSchema = {
             success: true,
@@ -52,7 +54,7 @@ class BranchController {
         }
 
         // perform to get list data
-        const listBranch: RouteContBridgeSchema = await this.listBranch(params);
+        const listBranch: RouteContBridgeSchema = await this.listBranch(params, user_properties);
         let datatable: DatatableSchema = {
             parameters: params,
             count: {
@@ -67,11 +69,27 @@ class BranchController {
         return response;
     }
 
-    async createBranch(body: branchSchema): Promise<RouteContBridgeSchema> {
+    async createBranch(body: branchSchema, user_properties: UserPropertySchema): Promise<RouteContBridgeSchema> {
         let response: RouteContBridgeSchema = {
             success: false,
             data: [],
             error: []
+        }
+
+        let error_tenant: boolean = false;
+        if (user_properties.role?.toLowerCase() === this.KEY_ROLE) {
+            if (body?.tenant_id === undefined || !body.tenant_id) error_tenant = true;
+        } else {
+            if (user_properties?.tenant_id === undefined || !body.tenant_id) {
+                error_tenant = true;
+            } else {
+                body.tenant_id = user_properties.tenant_id;
+            }
+        }
+
+        if (error_tenant) {
+            response.error = "TenantID is missing, please check your input";
+            return response;
         }
 
         try {
@@ -86,11 +104,27 @@ class BranchController {
 
     }
 
-    async updateBranch(id: string, body: branchSchema | { [key: string]: any }): Promise<RouteContBridgeSchema> {
+    async updateBranch(id: string, body: branchSchema | { [key: string]: any }, user_properties: UserPropertySchema): Promise<RouteContBridgeSchema> {
         let response: RouteContBridgeSchema = {
             success: false,
             data: [],
             error: []
+        }
+
+        let error_tenant: boolean = false;
+        if (user_properties.role?.toLowerCase() === this.KEY_ROLE) {
+            if (body?.tenant_id === undefined || !body.tenant_id) error_tenant = true;
+        } else {
+            if (user_properties?.tenant_id === undefined || !body.tenant_id) {
+                error_tenant = true;
+            } else {
+                body.tenant_id = user_properties.tenant_id;
+            }
+        }
+
+        if (error_tenant) {
+            response.error = "TenantID is missing, please check your input";
+            return response;
         }
 
         try {

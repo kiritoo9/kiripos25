@@ -19,8 +19,7 @@ router.get("/", async (req: Request, res: Response) => {
         const params: QueryParamsSchema = queryParams(req.query);
 
         // call controller for list and count
-        const user_properties: UserPropertySchema = (req as LoggedRequest).user_properties; // this data from logged token
-        console.log(user_properties)
+        const user_properties: UserPropertySchema = (req as LoggedRequest).user_properties; // get data from logged token
         const list: RouteContBridgeSchema = await userController.getTable(params, user_properties);
 
         // send to response
@@ -40,7 +39,8 @@ router.get("/", async (req: Request, res: Response) => {
 
 router.get("/:id", async (req: Request, res: Response) => {
     try {
-        const result = await userController.userDetail(req.params.id);
+        const user_properties: UserPropertySchema = (req as LoggedRequest).user_properties;
+        const result = await userController.userDetail(req.params.id, user_properties);
         let data: any = {
             code: 200,
             message: "Request success",
@@ -77,9 +77,10 @@ router.post("/", async (req: Request, res: Response) => {
                 error: error
             });
         }
+        const user_properties: UserPropertySchema = (req as LoggedRequest).user_properties;
 
         // perform to create user
-        const result: RouteContBridgeSchema = await userController.createUser(body);
+        const result: RouteContBridgeSchema = await userController.createUser(body, user_properties);
         if (!result.success) {
             return response(res, {
                 code: 400,
@@ -115,9 +116,10 @@ router.put("/:id", async (req: Request, res: Response) => {
                 error: error
             });
         }
+        const user_properties: UserPropertySchema = (req as LoggedRequest).user_properties;
 
         // perform to update user
-        const result: RouteContBridgeSchema = await userController.updateUser(req.params.id, body);
+        const result: RouteContBridgeSchema = await userController.updateUser(req.params.id, body, user_properties);
         if (!result.success) {
             return response(res, {
                 code: result?.code === undefined ? 400 : result.code, // handle multiple error code
@@ -142,7 +144,8 @@ router.put("/:id", async (req: Request, res: Response) => {
 
 router.delete("/:id", async (req: Request, res: Response) => {
     try {
-        const result: RouteContBridgeSchema = await userController.deleteUser(req.params.id);
+        const user_properties: UserPropertySchema = (req as LoggedRequest).user_properties;
+        const result: RouteContBridgeSchema = await userController.deleteUser(req.params.id, user_properties);
         if (!result.success) {
             return response(res, {
                 code: 400,

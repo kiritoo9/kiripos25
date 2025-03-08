@@ -4,6 +4,7 @@ import type { QueryParamsSchema } from "../../../interfaces/schemas/query-params
 import Roles from "../../models/roles.model";
 
 class RoleRepository {
+    KEY_ROLE: string = "superadmin";
 
     async getRoleById(id: string) {
         return await Roles.findOne({
@@ -32,7 +33,7 @@ class RoleRepository {
             attributes: ["id", "name", "description", "created_at"],
             where: {
                 name: {
-                    [Op.not]: "superadmin" // avoid superadmin role in frontend, user can't choose this role
+                    [Op.not]: this.KEY_ROLE // avoid superadmin role in frontend, user can't choose this role
                 },
                 [Op.or]: [
                     {

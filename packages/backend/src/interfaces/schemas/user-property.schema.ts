@@ -2,8 +2,11 @@ import type { Request } from "express";
 
 interface UserPropertySchema {
     role: string;
-    tenant: string;
-    branch: string;
+    role_id: string;
+    tenant?: string;
+    tenant_id?: string;
+    branch?: string;
+    branch_id?: string;
 }
 
 interface LoggedRequest extends Request {

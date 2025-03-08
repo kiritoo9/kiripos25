@@ -40,10 +40,14 @@ const verifyBearerToken = async (req: LoggedRequest, res: Response, next: NextFu
         const branch = await user_repo.getUserBranch(decoded?.id);
         if (branch) user_branch = branch;
 
+        // send data into request for global access
         req.user_properties = {
-            role: user_role?.roles?.name ?? null,
-            tenant: user_tenant?.tenants?.name ?? null,
-            branch: user_branch?.branches?.name ?? null
+            role: user_role?.role?.name ?? null,
+            role_id: user_role?.role_id ?? null,
+            tenant: user_tenant?.tenant?.name ?? null,
+            tenant_id: user_tenant?.tenant_id ?? null,
+            branch: user_branch?.branche?.name ?? null,
+            branch_id: user_branch?.branch_id ?? null
         }
 
         // allow this user to access the route

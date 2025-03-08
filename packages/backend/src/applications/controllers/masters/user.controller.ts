@@ -9,7 +9,7 @@ import type { DatatableSchema } from "../../../interfaces/schemas/datatable.sche
 import type { QueryParamsSchema } from "../../../interfaces/schemas/query-params.schema";
 import type { RouteContBridgeSchema } from "../../../interfaces/schemas/routecont-bridge.schema";
 import type { userSchema } from "../../../interfaces/schemas/masters/user.schema";
-import type { UserPropertySchema } from "../../../interfaces/schemas/user-property.schema";
+import type { LoggedRequest, UserPropertySchema } from "../../../interfaces/schemas/user-property.schema";
 import BranchRepository from "../../repos/masters/branch.repo";
 
 // load repositories
@@ -19,8 +19,9 @@ const roleRepo = new RoleRepository();
 const branchRepo = new BranchRepository
 
 class UserController {
+    KEY_ROLE: string = "superadmin";
 
-    async listUser(params: QueryParamsSchema, user_properties: UserPropertySchema | null = null): Promise<RouteContBridgeSchema> {
+    async listUser(params: QueryParamsSchema, user_properties: UserPropertySchema): Promise<RouteContBridgeSchema> {
         const data = await userRepo.getUserList(params, user_properties);
         let response: RouteContBridgeSchema = {
             success: true,
@@ -34,7 +35,7 @@ class UserController {
         return response;
     }
 
-    async userDetail(id: string): Promise<RouteContBridgeSchema> {
+    async userDetail(id: string, user_properties: UserPropertySchema): Promise<RouteContBridgeSchema> {
         let response: RouteContBridgeSchema = {
             success: false,
             data: null,
@@ -42,7 +43,7 @@ class UserController {
         }
 
         // check if data not found
-        let user = await userRepo.getUserById(id);
+        let user = await userRepo.getUserById(id, user_properties);
         if (!user) {
             response.error = "User not found";
             return response;
@@ -60,7 +61,7 @@ class UserController {
         return response;
     }
 
-    async createUser(body: userSchema): Promise<RouteContBridgeSchema> {
+    async createUser(body: userSchema, user_properties: UserPropertySchema): Promise<RouteContBridgeSchema> {
         let response: RouteContBridgeSchema = {
             success: false,
             data: null,
@@ -74,9 +75,23 @@ class UserController {
             return response;
         }
 
+        // if user logged={KEY_ROLE} then get tenant_id from body:tenant_id (after required validation)
+        // otherwise get tenant_id from logged token
+        // both condition will require tenant_id
+        let tenant_id: string | null = null;
+        if (user_properties.role?.toLowerCase() === this.KEY_ROLE) {
+            if (body?.tenant_id !== undefined && body.tenant_id) tenant_id = body.tenant_id;
+        } else {
+            if (user_properties?.tenant_id !== undefined && user_properties.tenant_id) tenant_id = user_properties.tenant_id;
+        }
+        if (!tenant_id) {
+            response.error = "TenantID is missing from input, please check your input";
+            return response;
+        }
+
         // check existing tenant
-        const tenant = await tenantRepo.getTenantById(body.tenant_id);
-        if (tenant) {
+        const tenant = await tenantRepo.getTenantById(tenant_id);
+        if (!tenant) {
             response.error = "TenantID is not found, please check the data";
             return response;
         }
@@ -89,7 +104,7 @@ class UserController {
         }
 
         // check existing branch
-        const branch = await branchRepo.getBranchById(body.branch_id);
+        const branch = await branchRepo.getBranchById(body.branch_id, user_properties);
         if (!branch) {
             response.error = "BranchID is not found, please check the data";
             return response;
@@ -119,7 +134,7 @@ class UserController {
 
         const user_tenant = {
             user_id: user.id,
-            tenant_id: body.tenant_id
+            tenant_id: tenant_id
         }
 
         const user_role = {
@@ -151,7 +166,7 @@ class UserController {
         }
     }
 
-    async updateUser(id: string, body: userSchema): Promise<RouteContBridgeSchema> {
+    async updateUser(id: string, body: userSchema, user_properties: UserPropertySchema): Promise<RouteContBridgeSchema> {
         let response: RouteContBridgeSchema = {
             success: false,
             data: null,
@@ -159,7 +174,7 @@ class UserController {
         }
 
         // check user exists by id
-        const exists = await userRepo.getUserById(id);
+        const exists = await userRepo.getUserById(id, user_properties);
         if (!exists) {
             response.code = 404; // define specific error code
             response.error = "Data is not found";
@@ -177,8 +192,22 @@ class UserController {
             }
         }
 
+        // if user logged={KEY_ROLE} then get tenant_id from body:tenant_id (after required validation)
+        // otherwise get tenant_id from logged token
+        // both condition will require tenant_id
+        let tenant_id: string | null = null;
+        if (user_properties.role?.toLowerCase() === this.KEY_ROLE) {
+            if (body?.tenant_id !== undefined && body.tenant_id) tenant_id = body.tenant_id;
+        } else {
+            if (user_properties?.tenant_id !== undefined && user_properties.tenant_id) tenant_id = user_properties.tenant_id;
+        }
+        if (!tenant_id) {
+            response.error = "TenantID is missing from input, please check your input";
+            return response;
+        }
+
         // check existing tenant
-        const tenant = await tenantRepo.getTenantById(body.tenant_id);
+        const tenant = await tenantRepo.getTenantById(tenant_id);
         if (tenant) {
             response.error = "TenantID is not found, please check the data";
             return response;
@@ -192,7 +221,7 @@ class UserController {
         }
 
         // check existing branch
-        const branch = await branchRepo.getBranchById(body.branch_id);
+        const branch = await branchRepo.getBranchById(body.branch_id, user_properties);
         if (!branch) {
             response.error = "BranchID is not found, please check the data";
             return response;
@@ -217,7 +246,7 @@ class UserController {
         }
 
         const user_tenant = {
-            tenant_id: body.tenant_id,
+            tenant_id: tenant_id,
             updated_at: new Date()
         }
 
@@ -253,7 +282,7 @@ class UserController {
         }
     }
 
-    async deleteUser(id: string): Promise<RouteContBridgeSchema> {
+    async deleteUser(id: string, user_properties: UserPropertySchema): Promise<RouteContBridgeSchema> {
         let response: RouteContBridgeSchema = {
             success: false,
             data: null,
@@ -261,7 +290,7 @@ class UserController {
         }
 
         // check user exists
-        const exist = await userRepo.getUserById(id);
+        const exist = await userRepo.getUserById(id, user_properties);
         if (!exist) {
             response.error = "Data is not found";
             response.code = 404; // define specific error code
@@ -316,7 +345,7 @@ class UserController {
         }
     }
 
-    async getTable(params: QueryParamsSchema, user_properties: UserPropertySchema | null = null): Promise<RouteContBridgeSchema> {
+    async getTable(params: QueryParamsSchema, user_properties: UserPropertySchema): Promise<RouteContBridgeSchema> {
         // define data
         let response: RouteContBridgeSchema = {
             success: true,

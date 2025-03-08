@@ -115,7 +115,7 @@ class AuthController {
         const accessToken: string = jwt.sign(
             dataToken,
             ENV.SECRET_KEY,
-            { expiresIn: "1h" }
+            { expiresIn: "3h" }
         );
         const refreshToken: string = jwt.sign(
             dataToken,

@@ -13,6 +13,7 @@ import Tenants from "../../models/tenants.model";
 import type { UserPropertySchema } from "../../../interfaces/schemas/user-property.schema";
 
 class UserRepository {
+    KEY_ROLE: string = "superadmin";
 
     async getUserByUsername(username: string, id: string | null = null) {
         let where: { [key: string]: any } = {
@@ -23,13 +24,38 @@ class UserRepository {
         return await Users.findOne({ where });
     }
 
-    async getUserById(id: string) {
+    async getUserById(id: string, user_properties: UserPropertySchema) {
+        // define conditions
+        let tenant_conditions: { [key: string]: any } = {};
+        if (user_properties.role?.toLowerCase() !== this.KEY_ROLE) {
+            if (user_properties?.tenant_id !== undefined && user_properties.tenant_id) {
+                tenant_conditions["tenant_id"] = user_properties.tenant_id;
+            } else {
+                return null;
+            }
+        }
+
+        // perform to get data
         return await Users.findOne({
             attributes: ["id", "username", "created_at"],
             where: {
                 deleted: false,
                 id: id
-            }
+            },
+            include: [
+                {
+                    model: UserTenants,
+                    required: true,
+                    attributes: ["tenant_id"],
+                    where: tenant_conditions,
+                    include: [
+                        {
+                            model: Tenants,
+                            attributes: ["code", "name", "tagline", "description", "remark"]
+                        }
+                    ]
+                }
+            ]
         });
     }
 
@@ -94,7 +120,7 @@ class UserRepository {
         });
     }
 
-    async getUserList(params: QueryParamsSchema, user_properties: UserPropertySchema | null = null) {
+    async getUserList(params: QueryParamsSchema, user_properties: UserPropertySchema) {
         // prepare data orderBy
         let order: [string, string] = ["created_at", "DESC"]; // default value
         if (params.order) {
@@ -105,13 +131,14 @@ class UserRepository {
         }
 
         // define conditions
-        let basic_conditions: { [key: string]: any } = {
-            deleted: false
-        }
-        if (user_properties) {
-            if (user_properties?.role?.toLowerCase() !== "superadmin") {
-                // this will force to get data based on user branch and tenant
-                // except superadmin
+        let tenant_conditions: { [key: string]: any } = {};
+        if (user_properties.role?.toLowerCase() !== this.KEY_ROLE) {
+            // this will force to get data based on user branch and tenant
+            // except superadmin
+            if (user_properties?.tenant_id !== undefined && user_properties.tenant_id) {
+                tenant_conditions["tenant_id"] = user_properties.tenant_id;
+            } else {
+                return { count: 0, rows: [] }
             }
         }
 
@@ -120,7 +147,7 @@ class UserRepository {
             attributes: ["id", "username", "created_at"],
             where: {
                 [Op.and]: [
-                    basic_conditions,
+                    { deleted: false },
                     {
                         [Op.or]: [
                             {
@@ -173,6 +200,18 @@ class UserRepository {
                             attributes: ["name"],
                         }
                     ]
+                },
+                {
+                    model: UserTenants,
+                    attributes: ["id", "tenant_id"],
+                    include: [
+                        {
+                            model: Tenants,
+                            attributes: ["code", "name", "tagline", "description", "remark"],
+                        }
+                    ],
+                    required: true,
+                    where: tenant_conditions
                 }
             ]
         });

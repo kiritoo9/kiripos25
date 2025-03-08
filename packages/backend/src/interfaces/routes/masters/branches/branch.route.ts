@@ -7,6 +7,7 @@ import response from "../../../../utils/response";
 import queryParams from "../../../../utils/query-params";
 import BranchController from "../../../../applications/controllers/masters/branch.controller";
 import { branchValidation, type branchSchema } from "../../../schemas/masters/branch.schema";
+import type { LoggedRequest, UserPropertySchema } from "../../../schemas/user-property.schema";
 
 // define necessary global function or variables
 // such as router, repos, models, and controllers
@@ -19,7 +20,8 @@ router.get("/", async (req: Request, res: Response) => {
         const params: QueryParamsSchema = queryParams(req.query);
 
         // call controller for list and count
-        const list: RouteContBridgeSchema = await branchController.getTable(params);
+        const user_properties: UserPropertySchema = (req as LoggedRequest).user_properties;
+        const list: RouteContBridgeSchema = await branchController.getTable(params, user_properties);
 
         // send to response
         return response(res, {
@@ -38,7 +40,8 @@ router.get("/", async (req: Request, res: Response) => {
 
 router.get("/:id", async (req: Request, res: Response) => {
     try {
-        const result: RouteContBridgeSchema = await branchController.branchDetail(req.params.id);
+        const user_properties: UserPropertySchema = (req as LoggedRequest).user_properties;
+        const result: RouteContBridgeSchema = await branchController.branchDetail(req.params.id, user_properties);
         let data: any = {
             code: 200,
             message: "Request success",
@@ -76,9 +79,10 @@ router.post("/", async (req: Request, res: Response) => {
                 error: error
             });
         }
+        const user_properties: UserPropertySchema = (req as LoggedRequest).user_properties;
 
         // do create data
-        const result: RouteContBridgeSchema = await branchController.createBranch(body);
+        const result: RouteContBridgeSchema = await branchController.createBranch(body, user_properties);
         if (!result.success) {
             return response(res, {
                 code: 400,
@@ -115,9 +119,10 @@ router.put("/:id", async (req: Request, res: Response) => {
                 error: error
             });
         }
+        const user_properties: UserPropertySchema = (req as LoggedRequest).user_properties;
 
         // check existing data
-        const data: RouteContBridgeSchema = await branchController.branchDetail(req.params.id);
+        const data: RouteContBridgeSchema = await branchController.branchDetail(req.params.id, user_properties);
         if (!data.success) {
             return response(res, {
                 code: 404,
@@ -127,7 +132,7 @@ router.put("/:id", async (req: Request, res: Response) => {
         }
 
         // do update data
-        const result: RouteContBridgeSchema = await branchController.updateBranch(req.params.id, body);
+        const result: RouteContBridgeSchema = await branchController.updateBranch(req.params.id, body, user_properties);
         if (!result.success) {
             return response(res, {
                 code: 400,
@@ -153,7 +158,8 @@ router.put("/:id", async (req: Request, res: Response) => {
 router.delete("/:id", async (req: Request, res: Response) => {
     try {
         // check existing data
-        const data: RouteContBridgeSchema = await branchController.branchDetail(req.params.id);
+        const user_properties: UserPropertySchema = (req as LoggedRequest).user_properties;
+        const data: RouteContBridgeSchema = await branchController.branchDetail(req.params.id, user_properties);
         if (!data.success) {
             return response(res, {
                 code: 404,
@@ -167,7 +173,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
             deleted: true,
             updated_at: new Date()
         }
-        const result: RouteContBridgeSchema = await branchController.updateBranch(req.params.id, updated_data);
+        const result: RouteContBridgeSchema = await branchController.updateBranch(req.params.id, updated_data, user_properties);
         if (!result.success) {
             return response(res, {
                 code: 400,

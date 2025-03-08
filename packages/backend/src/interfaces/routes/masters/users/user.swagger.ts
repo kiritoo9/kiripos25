@@ -109,6 +109,8 @@
  *                                        type: object
  *                                      user_branches:
  *                                          type: object
+ *                                      user_tenants:
+ *                                          type: object
  *          400:
  *              description: Bad request
  */
@@ -134,6 +136,9 @@
  *                    - password
  *                    - fullname
  *                  properties:
+ *                      tenant_id:
+ *                         type: string
+ *                         example: uuid-of-tenant
  *                      role_id:
  *                         type: string
  *                         example: uuid-of-role
@@ -193,6 +198,9 @@
  *               - username
  *               - fullname
  *             properties:
+ *               tenant_id:
+ *                 type: string
+ *                 example: uuid-of-tenant
  *               role_id:
  *                 type: string
  *                 example: uuid-of-role

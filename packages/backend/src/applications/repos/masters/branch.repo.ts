@@ -3,20 +3,40 @@ import type { QueryParamsSchema } from "../../../interfaces/schemas/query-params
 
 import Branches from "../../models/branches.model";
 import type { branchSchema } from "../../../interfaces/schemas/masters/branch.schema";
+import type { UserPropertySchema } from "../../../interfaces/schemas/user-property.schema";
+import Tenants from "../../models/tenants.model";
 
 class BranchRepository {
+    KEY_ROLE: string = "superadmin";
 
-    async getBranchById(id: string) {
+    async getBranchById(id: string, user_properties: UserPropertySchema) {
+        // define conditions
+        let base_conditions: { [key: string]: any } = {
+            deleted: false,
+            id: id
+        };
+        if (user_properties.role?.toLowerCase() !== this.KEY_ROLE) {
+            if (user_properties?.tenant_id !== undefined && user_properties.tenant_id) {
+                base_conditions["tenant_id"] = user_properties.tenant_id;
+            } else {
+                return null;
+            }
+        }
+
+        // perform to query
         return await Branches.findOne({
             attributes: ["id", "name", "phone", "address", "remark", "created_at"],
-            where: {
-                deleted: false,
-                id: id
-            }
+            where: base_conditions,
+            include: [
+                {
+                    model: Tenants,
+                    attributes: ["code", "name", "tagline", "description", "remark"]
+                }
+            ]
         });
     }
 
-    async getBranchList(params: QueryParamsSchema) {
+    async getBranchList(params: QueryParamsSchema, user_properties: UserPropertySchema) {
         // prepare data orderBy
         let order: [string, string] = ["created_at", "DESC"]; // default value
         if (params.order) {
@@ -26,12 +46,22 @@ class BranchRepository {
             }
         }
 
+        // define conditions
+        let base_conditions: { [key: string]: any } = { deleted: false };
+        if (user_properties.role?.toLowerCase() !== this.KEY_ROLE) {
+            if (user_properties?.tenant_id !== undefined && user_properties.tenant_id) {
+                base_conditions["tenant_id"] = user_properties.tenant_id;
+            } else {
+                return { count: 0, rows: [] };
+            }
+        }
+
         // perform to query
         return await Branches.findAndCountAll({
             attributes: ["id", "name", "phone", "address", "remark", "created_at"],
             where: {
                 [Op.and]: [
-                    { deleted: false },
+                    base_conditions,
                     {
                         [Op.or]: [
                             {
@@ -58,6 +88,12 @@ class BranchRepository {
                     }
                 ]
             },
+            include: [
+                {
+                    model: Tenants,
+                    attributes: ["code", "name", "tagline"]
+                }
+            ],
             limit: params.limit,
             offset: (params.page - 1) * params.limit,
             order: [order]

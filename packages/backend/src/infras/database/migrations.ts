@@ -3,6 +3,7 @@ import sequelize from "./sequelize";
 /**
  * Import necessary seeders
  */
+import { create as createTenant } from "./seeders/tenants";
 import { create as createRole } from "./seeders/roles";
 import { create as createBranch } from "./seeders/branches";
 import { create as createMenu } from "./seeders/menus";
@@ -17,7 +18,8 @@ async function syncModels() {
         });
 
         // start to perform seeder operation
-        const branchResponse = await createBranch();
+        const tenantResponse = await createTenant();
+        const branchResponse = await createBranch(tenantResponse);
         const roleResponse = await createRole();
         await createMenu(roleResponse);
         await createUser(branchResponse, roleResponse);
